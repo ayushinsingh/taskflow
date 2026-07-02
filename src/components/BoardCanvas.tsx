@@ -4,7 +4,7 @@ import { useBoardData } from "../context/BoardContext";
 import { Droppable } from "@hello-pangea/dnd";
 
 export const BoardCanvas: React.FC = () => {
-  const { state } = useBoardData();
+  const { state, handleDeleteColumn } = useBoardData();
   const board = state.boards.entities[state.activeBoardId];
   return (
     <main className="flex-1 flex flex-col min-w-0">
@@ -27,6 +27,7 @@ export const BoardCanvas: React.FC = () => {
                 columnId={columnId}
                 columnTitle={state.columns.entities[columnId].title}
                 taskIds={state.columns.entities[columnId].taskIds}
+                handleDeleteColumn={handleDeleteColumn}
               />
             ))}
             {provided.placeholder}
