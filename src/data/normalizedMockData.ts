@@ -57,6 +57,21 @@ export const initalNormalizedState: GlobalStateStore = {
     },
     ids: ["t-401", "t-402"],
   },
+  subTasks: {
+    entities: {
+      "s-501": {
+        id: "s-501",
+        title: "Create Jsx structure",
+        isCompleted: false
+      },
+      "s-502": {
+        id: "s-502",
+        title: "Add state logic",
+        isCompleted: false
+      }
+    },
+    ids: ["s-501", "s-502"],
+  },
   activeBoardId: 'b-201',
   activeTaskId: null
 };

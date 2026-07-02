@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import { initalNormalizedState } from "./data/normalizedMockData";
-import type { GlobalStateStore, NormalizedTask } from "./types/normalized.type";
+import type { GlobalStateStore, NormalizedSubTask, NormalizedTask } from "./types/normalized.type";
 import { Sidebar } from "./components/Sidebar";
 import { BoardCanvas } from "./components/BoardCanvas";
 import { BoardProvider } from "./context/BoardContext";
@@ -89,9 +89,41 @@ export default function App() {
     [],
   );
 
+  const handleAddSubTask = (taskId: string, title: string) => {
+    const newSubTask: NormalizedSubTask = {
+      id: crypto.randomUUID(),
+      title: title,
+      isCompleted: false
+    }
+    setState((prevState) => ({
+      ...prevState,
+      tasks: {
+        entities: {
+          ...prevState.tasks.entities,
+          [taskId]: { ...prevState.tasks.entities[taskId], subTaskIds: [...prevState.tasks.entities[taskId].subTaskIds, newSubTask.id] }
+        },
+        ids: prevState.tasks.ids
+      },
+      subTasks: {
+        entities: { ...prevState.subTasks.entities, [newSubTask.id]: newSubTask },
+        ids: [...prevState.subTasks.ids, newSubTask.id]
+      }
+    }))
+  }
+
+  const handleToggleSubTask = (subTaskId: string) => {
+    setState((prevState) => ({
+      ...prevState,
+      subTasks: {
+        entities: { ...prevState.subTasks.entities, [subTaskId]: { ...prevState.subTasks.entities[subTaskId], isCompleted: !prevState.subTasks.entities[subTaskId].isCompleted } },
+        ids: prevState.subTasks.ids
+      }
+    }))
+  }
+
   const moveColumn = (state: GlobalStateStore, activeBoardId: string, sourceIndex: number, destinationIndex: number): GlobalStateStore => {
-    const columnIds = [... state.boards.entities[activeBoardId].columnIds]
-    const [sourceColumnId] =columnIds.splice(sourceIndex, 1);
+    const columnIds = [...state.boards.entities[activeBoardId].columnIds]
+    const [sourceColumnId] = columnIds.splice(sourceIndex, 1);
     columnIds.splice(destinationIndex, 0, sourceColumnId)
     return {
       ...state,
@@ -104,13 +136,13 @@ export default function App() {
           }
         },
         ids: state.boards.ids
-      } 
+      }
     }
   }
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-    if(result.type === "COLUMN") {
+    if (result.type === "COLUMN") {
       setState((prevState) => moveColumn(prevState, prevState.activeBoardId, result.source.index, result.destination!.index));
     } else {
       setState((prevState) => moveTaskTraditional(
@@ -124,22 +156,24 @@ export default function App() {
   };
 
   const openTaskInspector = (id: string) => {
-    setState((prevState) => ({...prevState, activeTaskId: id}));
+    setState((prevState) => ({ ...prevState, activeTaskId: id }));
   }
 
   const onUpdateTask = (taskId: string, updatedTask: NormalizedTask) => {
-    setState((prevState) => ({...prevState, tasks: {
-      entities: {...prevState.tasks.entities, [taskId]: updatedTask},
-      ids: prevState.tasks.ids
-    }}))
+    setState((prevState) => ({
+      ...prevState, tasks: {
+        entities: { ...prevState.tasks.entities, [taskId]: updatedTask },
+        ids: prevState.tasks.ids
+      }
+    }))
   }
 
   const onClose = () => {
-    setState((prevState) => ({...prevState, activeTaskId: null}));
+    setState((prevState) => ({ ...prevState, activeTaskId: null }));
   }
 
   return (
-    <BoardProvider state={state} handleAddTask={handleAddTask} openTaskInspector={openTaskInspector}>
+    <BoardProvider state={state} handleAddTask={handleAddTask} openTaskInspector={openTaskInspector} handleAddSubTask={handleAddSubTask} handleToggleSubTask={handleToggleSubTask}>
       <div className="flex h-screen w-screen font-sans bg-zinc-900 text-zinc-100">
         <aside className="w-64 border-r border-zinc-800 bg-zinc-950 p-4">
           <h2 className="text-xl font-bold tracking-tight text-zinc-50 mb-6 text-center">

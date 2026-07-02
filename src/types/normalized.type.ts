@@ -23,6 +23,12 @@ export interface NormalizedTask {
   subTaskIds: string[];
 }
 
+export interface NormalizedSubTask {
+  id: string;
+  title: string;
+  isCompleted: boolean;
+}
+
 export interface EntityState<T> {
   entities: { [id: string]: T };
   ids: string[];
@@ -33,6 +39,7 @@ export interface GlobalStateStore {
   boards: EntityState<NormalizedBoard>;
   columns: EntityState<NormalizedColumn>;
   tasks: EntityState<NormalizedTask>;
+  subTasks: EntityState<NormalizedSubTask>;
   activeBoardId: string;
   activeTaskId: string | null;
 }

@@ -6,6 +6,8 @@ interface BoardContextType {
   state: GlobalStateStore;
   handleAddTask: (columnId: string, title: string) => void;
   openTaskInspector: (id: string) => void;
+  handleAddSubTask: (taskId: string, title: string) => void;
+  handleToggleSubTask: (subTaskId: string) => void;
 }
 
 interface BoardContextProviderProps extends BoardContextType {
@@ -14,9 +16,9 @@ interface BoardContextProviderProps extends BoardContextType {
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined);
 
-export const BoardProvider: React.FC<BoardContextProviderProps> = ({state, handleAddTask, openTaskInspector, children}) => {
+export const BoardProvider: React.FC<BoardContextProviderProps> = ({state, handleAddTask, openTaskInspector, handleAddSubTask, handleToggleSubTask, children}) => {
   return (
-    <BoardContext.Provider value={{state, handleAddTask, openTaskInspector}}>
+    <BoardContext.Provider value={{state, handleAddTask, openTaskInspector, handleAddSubTask, handleToggleSubTask}}>
       {children}
     </BoardContext.Provider>
   )
