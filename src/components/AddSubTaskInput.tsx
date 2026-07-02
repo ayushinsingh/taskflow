@@ -3,7 +3,7 @@ import { useBoardData } from "../context/BoardContext";
 
 export const AddSubTaskInput: React.FC<{ taskId: string }> = ({ taskId }) => {
   const { handleAddSubTask } = useBoardData();
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   return (
     <div className="mt-auto pt-2 border-t border-zinc-900">
       <input

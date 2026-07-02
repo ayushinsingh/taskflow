@@ -20,7 +20,10 @@ export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
             {...provided.draggableProps}
             className={`w-80 shrink-0 bg-zinc-950 rounded-lg p-4 flex flex-col max-h-full ${snapshot.isDragging ? "shadow-xl border-blue-500/50 bg-zinc-850" : ""}`}
           >
-            <h3 {...provided.dragHandleProps} className="font-semibold text-zinc-300 mb-3 px-1">
+            <h3
+              {...provided.dragHandleProps}
+              className="font-semibold text-zinc-300 mb-3 px-1"
+            >
               {columnTitle}
             </h3>
             <Droppable droppableId={columnId} type="TASK">

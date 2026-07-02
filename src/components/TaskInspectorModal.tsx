@@ -5,13 +5,16 @@ import { useBoardData } from "../context/BoardContext";
 import { AddSubTaskInput } from "./AddSubTaskInput";
 
 interface TaskInspectorModalProp {
-  task: NormalizedTask
+  task: NormalizedTask;
   onUpdateTask: (taskId: string, updatedTask: NormalizedTask) => void;
   onClose: () => void;
 }
 
-
-export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onUpdateTask, onClose }) => {
+export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({
+  task,
+  onUpdateTask,
+  onClose,
+}) => {
   const { state, handleToggleSubTask } = useBoardData();
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
@@ -22,7 +25,7 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onU
   }, [task.id]);
 
   const handlePriorityChange = (priority: Priority) => {
-    onUpdateTask(task.id, { ...task, priority })
+    onUpdateTask(task.id, { ...task, priority });
   };
 
   const handleBlur = (key: string, value: string) => {
@@ -30,12 +33,9 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onU
     onUpdateTask(task.id, { ...task, [key]: value });
   };
 
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end pointer-events-none">
-      <div
-        className="absolute inset-0 transition-opacity animate-fade-in"
-      />
+      <div className="absolute inset-0 transition-opacity animate-fade-in" />
       <div className="overflow-y-scroll pointer-events-auto relative h-full w-full max-w-lg bg-zinc-950 border-l border-zinc-800/80 p-8 shadow-[0_0_60px_-15px_rgba(0,0,0,0.7)] flex flex-col justify-start text-zinc-100 z-10 animate-slide-in">
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-800/60">
           <div className="flex items-center gap-2">
@@ -48,7 +48,9 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onU
             onClick={() => onClose()}
             className="group flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-all focus:outline-none"
           >
-            <span className="text-[10px] text-zinc-500 group-hover:text-zinc-300 transition-colors">✕</span>
+            <span className="text-[10px] text-zinc-500 group-hover:text-zinc-300 transition-colors">
+              ✕
+            </span>
             Close Panel
           </button>
         </div>
@@ -74,9 +76,11 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onU
               const isActive = task.priority === level;
               const colorMap = {
                 low: "border-emerald-500/20 text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 active:bg-emerald-500/20",
-                medium: "border-amber-500/20 text-amber-400 bg-amber-500/5 hover:bg-amber-500/10 active:bg-amber-500/20",
+                medium:
+                  "border-amber-500/20 text-amber-400 bg-amber-500/5 hover:bg-amber-500/10 active:bg-amber-500/20",
                 high: "border-rose-500/20 text-rose-400 bg-rose-500/5 hover:bg-rose-500/10 active:bg-rose-500/20",
-                urgent: "border-orange-500/20 text-orange-400 bg-orange-500/5 hover:bg-orange-500/10 active:bg-orange-500/20",
+                urgent:
+                  "border-orange-500/20 text-orange-400 bg-orange-500/5 hover:bg-orange-500/10 active:bg-orange-500/20",
               };
               const activeColorMap = {
                 low: "border-emerald-500/40 text-emerald-300 bg-emerald-500/20",
@@ -90,10 +94,11 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onU
                   key={level}
                   type="button"
                   onClick={() => handlePriorityChange(level)}
-                  className={`flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg border tracking-wider capitalize transition-all duration-150 ${isActive
-                    ? `${activeColorMap[level]} shadow-inner font-semibold ring-1 ring-white/5`
-                    : `${colorMap[level]} opacity-50 hover:opacity-100`
-                    }`}
+                  className={`flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg border tracking-wider capitalize transition-all duration-150 ${
+                    isActive
+                      ? `${activeColorMap[level]} shadow-inner font-semibold ring-1 ring-white/5`
+                      : `${colorMap[level]} opacity-50 hover:opacity-100`
+                  }`}
                 >
                   {level}
                 </button>
@@ -126,8 +131,9 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onU
             return (
               <div
                 key={subTaskId}
-                className={`group flex items-center gap-3 p-3 rounded-lg border border-zinc-900 bg-zinc-900/20 hover:bg-zinc-900/50 hover:border-zinc-800/80 transition-all duration-150 ${subTask.isCompleted ? "opacity-60 bg-zinc-950/20" : ""
-                  }`}
+                className={`group flex items-center gap-3 p-3 rounded-lg border border-zinc-900 bg-zinc-900/20 hover:bg-zinc-900/50 hover:border-zinc-800/80 transition-all duration-150 ${
+                  subTask.isCompleted ? "opacity-60 bg-zinc-950/20" : ""
+                }`}
               >
                 {/* Precision Styled Checkbox Box */}
                 <div className="relative flex items-center justify-center">
@@ -144,16 +150,21 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onU
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5"
+                    />
                   </svg>
                 </div>
 
                 {/* Subtask Title Context */}
                 <span
-                  className={`text-xs font-medium text-zinc-300 tracking-wide select-none transition-all duration-200 cursor-pointer ${subTask.isCompleted
-                    ? "line-through text-zinc-600 font-normal decoration-zinc-700 decoration-1"
-                    : "group-hover:text-zinc-100"
-                    }`}
+                  className={`text-xs font-medium text-zinc-300 tracking-wide select-none transition-all duration-200 cursor-pointer ${
+                    subTask.isCompleted
+                      ? "line-through text-zinc-600 font-normal decoration-zinc-700 decoration-1"
+                      : "group-hover:text-zinc-100"
+                  }`}
                   onClick={() => handleToggleSubTask(subTaskId)}
                 >
                   {subTask.title}
@@ -163,7 +174,15 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({ task, onU
           })}
           <AddSubTaskInput taskId={task.id} />
         </div>
-        <MetricCard title="Completed Sub Tasks" value={task.subTaskIds.reduce((total, current) => (state.subTasks.entities[current].isCompleted ? total + 1 : total), 0)} total={task.subTaskIds.length} />
+        <MetricCard
+          title="Completed Sub Tasks"
+          value={task.subTaskIds.reduce(
+            (total, current) =>
+              state.subTasks.entities[current].isCompleted ? total + 1 : total,
+            0,
+          )}
+          total={task.subTaskIds.length}
+        />
       </div>
     </div>
   );

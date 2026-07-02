@@ -6,7 +6,11 @@ interface MetricCardProps {
   total: number;
 }
 
-export const MetricCard: React.FC<MetricCardProps> = ({ title, value, total }) => {
+export const MetricCard: React.FC<MetricCardProps> = ({
+  title,
+  value,
+  total,
+}) => {
   // Prevent division by zero errors if there are no subtasks yet
   const percent = total > 0 ? Math.round((value / total) * 100) : 0;
 
