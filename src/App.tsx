@@ -204,6 +204,8 @@ export default function App() {
     }));
   };
 
+  
+
   const onClose = () => {
     setState((prevState) => ({ ...prevState, activeTaskId: null }));
   };
@@ -331,6 +333,22 @@ export default function App() {
     }))
   }
 
+  const handleUpdateBoardTitle = (boardId: string, boardTitle: string) => {
+    setState((prevState) => ({
+      ...prevState,
+      boards: {
+        ...prevState.boards,
+        entities: {
+          ...prevState.boards.entities,
+          [boardId]:{
+            ...prevState.boards.entities[boardId],
+            title: boardTitle
+          }
+        }
+      }
+    }))
+  }
+
   const handleCreateColumn = (title: string) => {
     const newColumn: NormalizedColumn = {
       id: crypto.randomUUID(),
@@ -359,6 +377,22 @@ export default function App() {
     }))
   }
 
+  const handleUpdateColumnTitle = (columnId: string, columnTitle: string) => {
+    setState((prevState) => ({
+      ...prevState,
+      columns: {
+        ids: prevState.columns.ids,
+        entities: {
+          ...prevState.columns.entities,
+          [columnId]: {
+            ...prevState.columns.entities[columnId],
+            title: columnTitle
+          }
+        }
+      }
+    }))
+  }
+
   return (
     <BoardProvider
       state={state}
@@ -370,6 +404,8 @@ export default function App() {
       handleDeleteTask={handleDeleteTask}
       handleCreateBoard={handleCreateBoard}
       handleCreateColumn={handleCreateColumn}
+      handleUpdateColumnTitle={handleUpdateColumnTitle}
+      handleUpdateBoardTitle={handleUpdateBoardTitle}
     >
       <div className="flex h-screen w-screen font-sans bg-zinc-900 text-zinc-100">
         <aside className="w-64 border-r border-zinc-800 bg-zinc-950 p-4">

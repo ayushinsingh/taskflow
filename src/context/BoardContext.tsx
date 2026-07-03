@@ -12,6 +12,8 @@ interface BoardContextType {
   handleDeleteColumn: (columnId: string) => void;
   handleCreateBoard: (title: string) => void;
   handleCreateColumn: (title: string) => void;
+  handleUpdateColumnTitle: (columnId: string, columnTitle: string) => void;
+  handleUpdateBoardTitle: (boardId: string, boardTitle: string) => void;
 }
 
 interface BoardContextProviderProps extends BoardContextType {
@@ -30,6 +32,8 @@ export const BoardProvider: React.FC<BoardContextProviderProps> = ({
   handleDeleteTask,
   handleCreateBoard,
   handleCreateColumn,
+  handleUpdateColumnTitle,
+  handleUpdateBoardTitle,
   children,
 }) => {
   return (
@@ -43,7 +47,9 @@ export const BoardProvider: React.FC<BoardContextProviderProps> = ({
         handleDeleteColumn,
         handleDeleteTask,
         handleCreateBoard,
-        handleCreateColumn
+        handleCreateColumn,
+        handleUpdateColumnTitle,
+        handleUpdateBoardTitle,
       }}
     >
       {children}

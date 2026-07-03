@@ -3,17 +3,17 @@ import { TaskCard } from "./TaskCard";
 import { AddTaskInput } from "./AddTaskInput";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { Trash2 } from "lucide-react";
+import { ColumnTitle } from "./ColumnTitle";
 
 interface ColumnLaneProps {
   index: number;
   columnId: string;
   columnTitle: string;
   taskIds: string[];
-  handleDeleteColumn: (columnId: string) => void;
 }
 
 export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
-  ({ index, columnId, columnTitle, taskIds, handleDeleteColumn }) => {
+  ({ index, columnId, columnTitle, taskIds }) => {
     return (
       <Draggable draggableId={columnId} index={index}>
         {(provided, snapshot) => (
@@ -22,21 +22,7 @@ export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
             {...provided.draggableProps}
             className={`w-80 shrink-0 bg-zinc-950 rounded-lg p-4 flex flex-col max-h-full ${snapshot.isDragging ? "shadow-xl border-blue-500/50 bg-zinc-850" : ""}`}
           >
-            <div className="flex items-center justify-between mb-3">
-              <h3
-                {...provided.dragHandleProps}
-                className="font-semibold text-zinc-300 text-center px-1"
-              >
-                {columnTitle}
-              </h3>
-              <button
-                className="rounded-md p-2 text-zinc-500 hover:bg-red-100 hover:text-red-600 transition-colors"
-                aria-label={`Delete Column: ${columnTitle}`}
-                onClick={() => handleDeleteColumn(columnId)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
+            <ColumnTitle columnId={columnId} columnTitle={columnTitle} dragProps={provided.dragHandleProps} />
             <Droppable droppableId={columnId} type="TASK">
               {(provided) => (
                 <div
@@ -45,7 +31,12 @@ export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
                   className="space-y-3 overflow-y-auto flex-1 mb-4"
                 >
                   {taskIds.map((taskId, index) => (
-                    <TaskCard key={taskId} taskId={taskId} columnId={columnId} index={index} />
+                    <TaskCard
+                      key={taskId}
+                      taskId={taskId}
+                      columnId={columnId}
+                      index={index}
+                    />
                   ))}
                   {provided.placeholder}
                 </div>

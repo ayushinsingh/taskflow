@@ -3,17 +3,24 @@ import { ColumnLane } from "./ColumnLane";
 import { useBoardData } from "../context/BoardContext";
 import { Droppable } from "@hello-pangea/dnd";
 import { AddColumnInput } from "./AddColumnInput";
+import { BoardTitle } from "./BoardTitle";
 
 export const BoardCanvas: React.FC = () => {
-  const { state, handleDeleteColumn } = useBoardData();
+  const { state, handleUpdateBoardTitle } = useBoardData();
   const board = state.boards.entities[state.activeBoardId];
+
+  if (!board) {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center bg-zinc-900 text-zinc-500">
+        <p className="text-lg font-medium">No active board selected</p>
+        <p className="text-sm text-zinc-600 mt-1">Select or create a board from the sidebar to get started.</p>
+      </main>
+    );
+  }
+
   return (
     <main className="flex-1 flex flex-col min-w-0">
-      <header className="h-16 border-b border-zinc-800 bg-zinc-950/50 flex items-center px-4">
-        <h1 className="text-xl font-semibold">
-          {board.title || "Select a board"}
-        </h1>
-      </header>
+      <BoardTitle boardId={board.id} boardTitle={board.title} handleUpdateBoardTitle={handleUpdateBoardTitle} />
       <Droppable droppableId="column" direction="horizontal" type="COLUMN">
         {(provided) => (
           <div
@@ -28,7 +35,6 @@ export const BoardCanvas: React.FC = () => {
                 columnId={columnId}
                 columnTitle={state.columns.entities[columnId].title}
                 taskIds={state.columns.entities[columnId].taskIds}
-                handleDeleteColumn={handleDeleteColumn}
               />
             ))}
             {provided.placeholder}
