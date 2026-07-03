@@ -2,6 +2,7 @@ import React from "react";
 import { ColumnLane } from "./ColumnLane";
 import { useBoardData } from "../context/BoardContext";
 import { Droppable } from "@hello-pangea/dnd";
+import { AddColumnInput } from "./AddColumnInput";
 
 export const BoardCanvas: React.FC = () => {
   const { state, handleDeleteColumn } = useBoardData();
@@ -31,6 +32,7 @@ export const BoardCanvas: React.FC = () => {
               />
             ))}
             {provided.placeholder}
+            <AddColumnInput />
           </div>
         )}
       </Droppable>

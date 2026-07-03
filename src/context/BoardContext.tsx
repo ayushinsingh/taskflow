@@ -10,7 +10,8 @@ interface BoardContextType {
   handleToggleSubTask: (subTaskId: string) => void;
   handleDeleteTask: (taskId: string, columnId: string) => void;
   handleDeleteColumn: (columnId: string) => void;
-  handleCreateBoard: (boardId: string) => void;
+  handleCreateBoard: (title: string) => void;
+  handleCreateColumn: (title: string) => void;
 }
 
 interface BoardContextProviderProps extends BoardContextType {
@@ -28,6 +29,7 @@ export const BoardProvider: React.FC<BoardContextProviderProps> = ({
   handleDeleteColumn,
   handleDeleteTask,
   handleCreateBoard,
+  handleCreateColumn,
   children,
 }) => {
   return (
@@ -40,7 +42,8 @@ export const BoardProvider: React.FC<BoardContextProviderProps> = ({
         handleToggleSubTask,
         handleDeleteColumn,
         handleDeleteTask,
-        handleCreateBoard
+        handleCreateBoard,
+        handleCreateColumn
       }}
     >
       {children}

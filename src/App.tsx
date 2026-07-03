@@ -4,6 +4,7 @@ import { initalNormalizedState } from "./data/normalizedMockData";
 import type {
   GlobalStateStore,
   NormalizedBoard,
+  NormalizedColumn,
   NormalizedSubTask,
   NormalizedTask,
 } from "./types/normalized.type";
@@ -319,7 +320,7 @@ export default function App() {
         ids: prevState.workspaces.ids
       },
       boards: {
-        ...prevState.workspaces,
+        ...prevState.boards,
         entities: {
           ...prevState.boards.entities,
           [newBoard.id]: newBoard
@@ -327,6 +328,34 @@ export default function App() {
         ids: [...prevState.boards.ids, newBoard.id]
       },
       activeBoardId: newBoard.id
+    }))
+  }
+
+  const handleCreateColumn = (title: string) => {
+    const newColumn: NormalizedColumn = {
+      id: crypto.randomUUID(),
+      title: title,
+      taskIds: []
+    }
+    setState((prevState) => ({
+      ...prevState,
+      boards: {
+        ...prevState.boards,
+        entities: {
+          ...prevState.boards.entities,
+          [prevState.activeBoardId]: {
+            ...prevState.boards.entities[prevState.activeBoardId],
+            columnIds: [...prevState.boards.entities[prevState.activeBoardId].columnIds, newColumn.id]
+          }
+        }
+      },
+      columns: {
+        entities: {
+          ...prevState.columns.entities,
+          [newColumn.id]: newColumn
+        },
+        ids: [...prevState.columns.ids, newColumn.id]
+      }
     }))
   }
 
@@ -340,6 +369,7 @@ export default function App() {
       handleDeleteColumn={handleDeleteColumn}
       handleDeleteTask={handleDeleteTask}
       handleCreateBoard={handleCreateBoard}
+      handleCreateColumn={handleCreateColumn}
     >
       <div className="flex h-screen w-screen font-sans bg-zinc-900 text-zinc-100">
         <aside className="w-64 border-r border-zinc-800 bg-zinc-950 p-4">
