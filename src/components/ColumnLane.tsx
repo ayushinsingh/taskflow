@@ -20,7 +20,7 @@ export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
           <div
             ref={provided.innerRef}
             {...provided.draggableProps}
-            className={`w-80 shrink-0 bg-zinc-950 rounded-lg p-4 flex flex-col max-h-full ${snapshot.isDragging ? "shadow-xl border-blue-500/50 bg-zinc-850" : ""}`}
+            className={`group w-80 shrink-0 bg-zinc-950 rounded-lg p-4 flex flex-col max-h-full ${snapshot.isDragging ? "shadow-xl border-blue-500/50 bg-zinc-850" : ""}`}
           >
             <ColumnTitle columnId={columnId} columnTitle={columnTitle} dragProps={provided.dragHandleProps} />
             <Droppable droppableId={columnId} type="TASK">

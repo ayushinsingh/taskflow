@@ -59,7 +59,7 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
         {columnTitle}
       </h3>
       <button
-        className="rounded-md p-2 text-zinc-500 hover:bg-red-100 hover:text-red-600 transition-colors"
+        className="opacity-0 group-hover:opacity-100 p-2 mr-1 text-zinc-500 hover:text-red-400 transition-all"
         aria-label={`Delete Column: ${columnTitle}`}
         onClick={() => handleDeleteColumn(columnId)}
       >

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import { initalNormalizedState } from "./data/normalizedMockData";
 import type {
@@ -14,7 +14,15 @@ import { BoardProvider } from "./context/BoardContext";
 import { TaskInspectorModal } from "./components/TaskInspectorModal";
 
 export default function App() {
-  const [state, setState] = useState(initalNormalizedState);
+  const [state, setState] = useState<GlobalStateStore>(() => {
+    const localCache = localStorage.getItem("kanban_workspace_store");
+    return localCache ? JSON.parse(localCache) : initalNormalizedState;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("kanban_workspace_store", JSON.stringify(state));
+  }, [state]);
+
   const activeWorkspace = state.workspaces.entities[state.workspaces.ids[0]];
 
   const handleBoardChange = useCallback((boardId: string) => {
@@ -204,34 +212,40 @@ export default function App() {
     }));
   };
 
-  
-
   const onClose = () => {
     setState((prevState) => ({ ...prevState, activeTaskId: null }));
   };
 
   const handleDeleteColumn = (columnId: string) => {
     setState((prevState) => {
-      const updatedColumns = {...prevState.columns.entities};
+      const updatedColumns = { ...prevState.columns.entities };
       delete updatedColumns[columnId];
-      const updatedColumnIds = prevState.columns.ids.filter((col) => col != columnId);
+      const updatedColumnIds = prevState.columns.ids.filter(
+        (col) => col != columnId,
+      );
 
       const prevTaskIds = prevState.columns.entities[columnId].taskIds;
-      const updatedTaskIds = prevState.tasks.ids.filter(t => !prevTaskIds.includes(t));
-      const updatedTasks = {...prevState.tasks.entities};
+      const updatedTaskIds = prevState.tasks.ids.filter(
+        (t) => !prevTaskIds.includes(t),
+      );
+      const updatedTasks = { ...prevState.tasks.entities };
       let prevSubTaskIds: string[] = [];
 
-      prevTaskIds.forEach(id => {
-        prevSubTaskIds = [...prevSubTaskIds, ...prevState.tasks.entities[id].subTaskIds]
+      prevTaskIds.forEach((id) => {
+        prevSubTaskIds = [
+          ...prevSubTaskIds,
+          ...prevState.tasks.entities[id].subTaskIds,
+        ];
         delete updatedTasks[id];
-      })
+      });
 
-      const updatedSubTasks = {...prevState.subTasks.entities}
-      const updatedSubTaskIds = prevState.subTasks.ids.filter((id) => !prevSubTaskIds.includes(id));
+      const updatedSubTasks = { ...prevState.subTasks.entities };
+      const updatedSubTaskIds = prevState.subTasks.ids.filter(
+        (id) => !prevSubTaskIds.includes(id),
+      );
       prevSubTaskIds.forEach((id) => {
-        delete updatedSubTasks[id]
-      })
-
+        delete updatedSubTasks[id];
+      });
 
       return {
         ...prevState,
@@ -240,26 +254,31 @@ export default function App() {
             ...prevState.boards.entities,
             [prevState.activeBoardId]: {
               ...prevState.boards.entities[prevState.activeBoardId],
-              columnIds: prevState.boards.entities[prevState.activeBoardId].columnIds.filter((c) => c != columnId)
-            }
+              columnIds: prevState.boards.entities[
+                prevState.activeBoardId
+              ].columnIds.filter((c) => c != columnId),
+            },
           },
-          ids: prevState.boards.ids
+          ids: prevState.boards.ids,
         },
         columns: {
           entities: updatedColumns,
-          ids: updatedColumnIds
+          ids: updatedColumnIds,
         },
         tasks: {
           entities: updatedTasks,
-          ids: updatedTaskIds
+          ids: updatedTaskIds,
         },
         subTasks: {
           entities: updatedSubTasks,
-          ids: updatedSubTaskIds
+          ids: updatedSubTaskIds,
         },
-        activeTaskId: prevState.activeTaskId && prevTaskIds.includes(prevState.activeTaskId) ? null : prevState.activeTaskId 
-      }
-    })
+        activeTaskId:
+          prevState.activeTaskId && prevTaskIds.includes(prevState.activeTaskId)
+            ? null
+            : prevState.activeTaskId,
+      };
+    });
   };
   const handleDeleteTask = (taskId: string, columnId: string) => {
     setState((prevState) => {
@@ -307,8 +326,8 @@ export default function App() {
     const newBoard: NormalizedBoard = {
       id: crypto.randomUUID(),
       title: title,
-      columnIds: []
-    }
+      columnIds: [],
+    };
     setState((prevState) => ({
       ...prevState,
       workspaces: {
@@ -316,22 +335,26 @@ export default function App() {
           ...prevState.workspaces.entities,
           [prevState.workspaces.ids[0]]: {
             ...prevState.workspaces.entities[prevState.workspaces.ids[0]],
-            boardIds: [...prevState.workspaces.entities[prevState.workspaces.ids[0]].boardIds, newBoard.id]
-          }
+            boardIds: [
+              ...prevState.workspaces.entities[prevState.workspaces.ids[0]]
+                .boardIds,
+              newBoard.id,
+            ],
+          },
         },
-        ids: prevState.workspaces.ids
+        ids: prevState.workspaces.ids,
       },
       boards: {
         ...prevState.boards,
         entities: {
           ...prevState.boards.entities,
-          [newBoard.id]: newBoard
+          [newBoard.id]: newBoard,
         },
-        ids: [...prevState.boards.ids, newBoard.id]
+        ids: [...prevState.boards.ids, newBoard.id],
       },
-      activeBoardId: newBoard.id
-    }))
-  }
+      activeBoardId: newBoard.id,
+    }));
+  };
 
   const handleUpdateBoardTitle = (boardId: string, boardTitle: string) => {
     setState((prevState) => ({
@@ -340,21 +363,86 @@ export default function App() {
         ...prevState.boards,
         entities: {
           ...prevState.boards.entities,
-          [boardId]:{
+          [boardId]: {
             ...prevState.boards.entities[boardId],
-            title: boardTitle
+            title: boardTitle,
+          },
+        },
+      },
+    }));
+  };
+
+  const handleDeleteBoard = (boardId: string) => {
+    setState((prevState) => {
+      const primaryWorkspaceId = prevState.workspaces.ids[0];
+      const updatedBoardEntities = {...prevState.boards.entities};
+      delete updatedBoardEntities[boardId];
+
+      const updatedColumnEntities = {...prevState.columns.entities};
+      const updatedTaskEntites = {...prevState.tasks.entities};
+      const updatedSubTaskEntites = {...prevState.subTasks.entities};
+
+      prevState.boards.entities[boardId].columnIds.forEach((columnId) => {
+        delete updatedColumnEntities[columnId];
+        prevState.columns.entities[columnId].taskIds.forEach((taskId) => {
+          delete updatedTaskEntites[taskId];
+          prevState.tasks.entities[taskId].subTaskIds.forEach((subTaskId) => {
+            delete updatedSubTaskEntites[subTaskId];
+          })
+        })
+      })
+      
+      prevState.boards.entities[boardId].columnIds.forEach((columnId) => {
+        delete updatedColumnEntities[columnId];
+      })
+
+      let nextActiveBoardId = prevState.activeBoardId;
+      let nextActiveTaskId =  prevState.activeTaskId;
+
+      if(prevState.activeBoardId === boardId) {
+        nextActiveBoardId = prevState.activeBoardId === boardId ? Object.keys(updatedBoardEntities)[0] : prevState.activeBoardId;
+        nextActiveTaskId = null;
+      }
+      return {
+        ...prevState,
+        activeBoardId: nextActiveBoardId,
+        activeTaskId: nextActiveTaskId,
+        workspaces: {
+          ...prevState.workspaces,
+          entities: {
+            ...prevState.workspaces.entities,
+            [primaryWorkspaceId]: {
+              ...prevState.workspaces.entities[primaryWorkspaceId],
+              boardIds: prevState.workspaces.entities[primaryWorkspaceId].boardIds.filter(id => id != boardId)
+            }
           }
+        },
+        boards: {
+          entities: updatedBoardEntities,
+          ids: Object.keys(updatedBoardEntities)
+        },
+        columns: {
+          entities: updatedColumnEntities,
+          ids: Object.keys(updatedColumnEntities)
+        },
+        tasks: {
+          entities: updatedTaskEntites,
+          ids: Object.keys(updatedTaskEntites)
+        },
+        subTasks: {
+          entities: updatedSubTaskEntites,
+          ids: Object.keys(updatedSubTaskEntites)
         }
       }
-    }))
+    })
   }
 
   const handleCreateColumn = (title: string) => {
     const newColumn: NormalizedColumn = {
       id: crypto.randomUUID(),
       title: title,
-      taskIds: []
-    }
+      taskIds: [],
+    };
     setState((prevState) => ({
       ...prevState,
       boards: {
@@ -363,19 +451,22 @@ export default function App() {
           ...prevState.boards.entities,
           [prevState.activeBoardId]: {
             ...prevState.boards.entities[prevState.activeBoardId],
-            columnIds: [...prevState.boards.entities[prevState.activeBoardId].columnIds, newColumn.id]
-          }
-        }
+            columnIds: [
+              ...prevState.boards.entities[prevState.activeBoardId].columnIds,
+              newColumn.id,
+            ],
+          },
+        },
       },
       columns: {
         entities: {
           ...prevState.columns.entities,
-          [newColumn.id]: newColumn
+          [newColumn.id]: newColumn,
         },
-        ids: [...prevState.columns.ids, newColumn.id]
-      }
-    }))
-  }
+        ids: [...prevState.columns.ids, newColumn.id],
+      },
+    }));
+  };
 
   const handleUpdateColumnTitle = (columnId: string, columnTitle: string) => {
     setState((prevState) => ({
@@ -386,12 +477,12 @@ export default function App() {
           ...prevState.columns.entities,
           [columnId]: {
             ...prevState.columns.entities[columnId],
-            title: columnTitle
-          }
-        }
-      }
-    }))
-  }
+            title: columnTitle,
+          },
+        },
+      },
+    }));
+  };
 
   return (
     <BoardProvider
@@ -416,6 +507,7 @@ export default function App() {
             boards={state.boards}
             activeBoardId={state.activeBoardId}
             handleBoardChange={handleBoardChange}
+            handleDeleteBoard={handleDeleteBoard}
           />
         </aside>
         <DragDropContext onDragEnd={handleDragEnd}>

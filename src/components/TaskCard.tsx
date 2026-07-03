@@ -35,7 +35,7 @@ export const TaskCard: React.FC<TaskCardProp> = ({
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-zinc-900 p-4 rounded-md border border-zinc-800 shadow-sm transition-shadow ${
+          className={`bg-zinc-900 p-4 group/task rounded-md border border-zinc-800 shadow-sm transition-shadow ${
             snapshot.isDragging
               ? "shadow-xl border-blue-500/50 bg-zinc-850"
               : ""
@@ -45,7 +45,7 @@ export const TaskCard: React.FC<TaskCardProp> = ({
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-medium text-zinc-200 mb-1">{task.title}</h4>
             <button
-              className="rounded-md p-2 text-zinc-500 hover:bg-red-100 hover:text-red-600 transition-colors"
+              className="opacity-0 group-hover/task:opacity-100 p-2 mr-1 text-zinc-500 hover:text-red-400 transition-all"
               aria-label={`Delete Column: ${task.title}`}
               onClick={(e) => {
                 e.stopPropagation();
