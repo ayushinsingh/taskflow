@@ -7,6 +7,7 @@ export const AddTaskInput: React.FC<{ columnId: string }> = ({ columnId }) => {
   return (
     <div className="mt-auto pt-2 border-t border-zinc-900">
       <input
+        id={`new-task-input-${columnId}`}
         type="text"
         placeholder="+ Add new task..."
         value={title}

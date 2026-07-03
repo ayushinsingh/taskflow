@@ -7,6 +7,7 @@ export const AddSubTaskInput: React.FC<{ taskId: string }> = ({ taskId }) => {
   return (
     <div className="mt-auto pt-2 border-t border-zinc-900">
       <input
+        id={`new-task-input-${taskId}`}
         type="text"
         placeholder="+ Add new sub task..."
         value={title}
