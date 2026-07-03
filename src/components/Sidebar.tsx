@@ -1,5 +1,6 @@
 import React from "react";
 import type { EntityState, NormalizedBoard } from "../types/normalized.type";
+import { AddBoardInput } from "./AddBoardInput";
 
 interface SidebarProps {
   boards: EntityState<NormalizedBoard>;
@@ -23,6 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(
             📊 {boards.entities[boardId].title}
           </button>
         ))}
+        <AddBoardInput />
       </nav>
     );
   },

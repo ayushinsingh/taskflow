@@ -3,6 +3,7 @@ import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import { initalNormalizedState } from "./data/normalizedMockData";
 import type {
   GlobalStateStore,
+  NormalizedBoard,
   NormalizedSubTask,
   NormalizedTask,
 } from "./types/normalized.type";
@@ -299,6 +300,36 @@ export default function App() {
     });
   };
 
+  const handleCreateBoard = (title: string) => {
+    const newBoard: NormalizedBoard = {
+      id: crypto.randomUUID(),
+      title: title,
+      columnIds: []
+    }
+    setState((prevState) => ({
+      ...prevState,
+      workspaces: {
+        entities: {
+          ...prevState.workspaces.entities,
+          [prevState.workspaces.ids[0]]: {
+            ...prevState.workspaces.entities[prevState.workspaces.ids[0]],
+            boardIds: [...prevState.workspaces.entities[prevState.workspaces.ids[0]].boardIds, newBoard.id]
+          }
+        },
+        ids: prevState.workspaces.ids
+      },
+      boards: {
+        ...prevState.workspaces,
+        entities: {
+          ...prevState.boards.entities,
+          [newBoard.id]: newBoard
+        },
+        ids: [...prevState.boards.ids, newBoard.id]
+      },
+      activeBoardId: newBoard.id
+    }))
+  }
+
   return (
     <BoardProvider
       state={state}
@@ -308,6 +339,7 @@ export default function App() {
       handleToggleSubTask={handleToggleSubTask}
       handleDeleteColumn={handleDeleteColumn}
       handleDeleteTask={handleDeleteTask}
+      handleCreateBoard={handleCreateBoard}
     >
       <div className="flex h-screen w-screen font-sans bg-zinc-900 text-zinc-100">
         <aside className="w-64 border-r border-zinc-800 bg-zinc-950 p-4">
