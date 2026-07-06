@@ -58,4 +58,5 @@ export const { addTask, updateTask, deleteTask, removeTasks, openTaskInspector, 
 export const taskSelectors = tasksAdapter.getSelectors<RootState>(
   (state) => state.tasks,
 );
+export const selectActiveTaskId = (state: RootState) => state.tasks.activeTaskId;
 export default taskSlice.reducer;

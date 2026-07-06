@@ -10,7 +10,7 @@ import { initalNormalizedState } from "../../data/normalizedMockData";
 const columnsAdapter = createEntityAdapter<NormalizedColumn>();
 const initialState = columnsAdapter.setAll(
   columnsAdapter.getInitialState(),
-  initalNormalizedState.columns.entities,
+  initalNormalizedState.columns.entities as Record<string, NormalizedColumn>,
 );
 
 export const columnSlice = createSlice({
@@ -68,7 +68,7 @@ export const columnSlice = createSlice({
       const destinationColumn = state.entities[destinationColumnId];
       const taskId = sourceColumn.taskIds[sourceIndex];
 
-      if (!sourceColumn || !deleteColumn) return;
+      if (!sourceColumn || !destinationColumn) return;
 
       if (sourceColumnId === destinationColumnId) {
         const updatedTaskIds = [...sourceColumn.taskIds];

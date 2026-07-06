@@ -11,7 +11,7 @@ const workspaceAdapter = createEntityAdapter<NormalizedWorkspace>();
 
 const initialState = workspaceAdapter.setAll(
   workspaceAdapter.getInitialState(),
-  initalNormalizedState.workspaces.entities,
+  initalNormalizedState.workspaces.entities as Record<string, NormalizedWorkspace>,
 );
 
 export const workspaceSlice = createSlice({
