@@ -15,22 +15,29 @@ export default function App() {
   );
 
   const handleDragEnd = (result: DropResult) => {
+    const { source, destination, type } = result;
     if (!result.destination) return;
-    if (result.type === "COLUMN") {
+    if (
+      source.droppableId === destination!.droppableId &&
+      source.index === destination!.index
+    ) {
+      return;
+    }
+    if (type === "COLUMN") {
       dispatch(
         moveColumnLane({
           boardId: activeBoardId,
-          sourceIndex: result.source.index,
-          destinationIndex: result.destination.index,
+          sourceIndex: source.index,
+          destinationIndex: destination!.index,
         }),
       );
     } else {
       dispatch(
         moveTaskCard({
-          sourceColumnId: result.source.droppableId,
-          sourceIndex: result.source.index,
-          destinationColumnId: result.destination.droppableId,
-          destinationIndex: result.destination.index,
+          sourceColumnId: source.droppableId,
+          sourceIndex: source.index,
+          destinationColumnId: destination!.droppableId,
+          destinationIndex: destination!.index,
         }),
       );
     }

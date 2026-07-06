@@ -50,7 +50,7 @@ export const TaskInspectorModal: React.FC = () => {
       onClick={() => dispatch(closeTaskInspector())}
     >
       <div
-        className="w-[450px] h-full bg-zinc-950 border-l border-zinc-800 p-6 flex flex-col justify-between shadow-2xl animate-slide-in"
+        className="w-112.5 h-full bg-zinc-950 border-l border-zinc-800 p-6 flex flex-col justify-between shadow-2xl animate-slide-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="space-y-6 overflow-y-auto pr-1">
