@@ -221,5 +221,4 @@ describe("Task Slice Unit Tests", () => {
 
     expect(state.activeTaskId).toBe(null);
   });
-
 });
