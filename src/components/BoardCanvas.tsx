@@ -27,10 +27,7 @@ export const BoardCanvas: React.FC = () => {
     <main className="flex-1 flex flex-col min-w-0">
       <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950/50 pr-4">
         <div className="flex-1">
-          <BoardTitle
-            boardId={board.id}
-            boardTitle={board.title}
-          />
+          <BoardTitle boardId={board.id} boardTitle={board.title} />
         </div>
         <button
           onClick={() => setShowMetrics(!showMetrics)}
@@ -40,7 +37,7 @@ export const BoardCanvas: React.FC = () => {
           {showMetrics ? "Hide Analytics" : "Show Analytics"}
         </button>
       </div>
-      {showMetrics && <Metrics boardId={activeBoardId} />}
+      {showMetrics && <Metrics />}
       <Droppable droppableId="column" direction="horizontal" type="COLUMN">
         {(provided) => (
           <div
@@ -49,11 +46,7 @@ export const BoardCanvas: React.FC = () => {
             className="flex-1 p-6 overflow-x-auto flex items-start gap-4"
           >
             {board.columnIds.map((columnId, index) => (
-              <ColumnLane
-                key={columnId}
-                index={index}
-                columnId={columnId}
-              />
+              <ColumnLane key={columnId} index={index} columnId={columnId} />
             ))}
             {provided.placeholder}
             <AddColumnInput />

@@ -1,33 +1,9 @@
 import { useAppSelector } from "../store";
+import { selectBoardMetrics } from "../store/selectors";
 
-interface MetricProps {
-  boardId: string;
-}
-
-export const Metrics: React.FC<MetricProps> = ({ boardId }) => {
-  const board = useAppSelector((state) => state.boards.entities[boardId]);
-  const columns = useAppSelector((state) => state.columns);
-  const tasks = useAppSelector((state) => state.tasks);
-  const subTasks = useAppSelector((state) => state.subTasks);
-
-  const boardColumns = board.columnIds
-    .map((id) => columns.entities[id])
-    .filter(Boolean);
-  const activeTaskIds = boardColumns.flatMap((col) => col.taskIds);
-  const totalTasks = activeTaskIds.length;
-
-  const activeSubTaskIds = activeTaskIds.flatMap(
-    (id) => tasks.entities[id]?.subTaskIds || [],
-  );
-  const totalSubTasks = activeSubTaskIds.length;
-  const completedSubTasks = activeSubTaskIds.filter(
-    (id) => subTasks.entities[id]?.isCompleted,
-  ).length;
-
-  const completionPercentage =
-    totalSubTasks > 0
-      ? Math.round((completedSubTasks / totalSubTasks) * 100)
-      : 0;
+export const Metrics: React.FC = ({}) => {
+  const { totalTasks, totalSubTasks, completedSubTasks, completionPercentage } =
+    useAppSelector(selectBoardMetrics);
 
   return (
     <div className=" bg-zinc-950 border-b border-zinc-800 p-4 grid grid-cols-3 gap-4 z-30 animate-in fade-in slide-in-from-top-2 duration-200">
