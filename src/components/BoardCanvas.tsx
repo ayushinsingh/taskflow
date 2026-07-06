@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { ColumnLane } from "./ColumnLane";
-import { useBoardData } from "../context/BoardContext";
 import { Droppable } from "@hello-pangea/dnd";
 import { AddColumnInput } from "./AddColumnInput";
 import { BoardTitle } from "./BoardTitle";
-import { BarChart3, CheckCircle2 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
+import { useAppSelector } from "../store";
+import { Metrics } from "./Metrics";
 
 export const BoardCanvas: React.FC = () => {
-  const { state, handleUpdateBoardTitle } = useBoardData();
-  const board = state.boards.entities[state.activeBoardId];
+  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
+  const board = useAppSelector((state) => state.boards.entities[activeBoardId]);
   const [showMetrics, setShowMetrics] = useState<boolean>(false);
 
   if (!board) {
@@ -22,25 +23,6 @@ export const BoardCanvas: React.FC = () => {
     );
   }
 
-  const boardColumns = board.columnIds
-    .map((id) => state.columns.entities[id])
-    .filter(Boolean);
-  const activeTaskIds = boardColumns.flatMap((col) => col.taskIds);
-  const totalTasks = activeTaskIds.length;
-
-  const activeSubTaskIds = activeTaskIds.flatMap(
-    (id) => state.tasks.entities[id]?.subTaskIds || [],
-  );
-  const totalSubTasks = activeSubTaskIds.length;
-  const completedSubTasks = activeSubTaskIds.filter(
-    (id) => state.subTasks.entities[id]?.isCompleted,
-  ).length;
-
-  const completionPercentage =
-    totalSubTasks > 0
-      ? Math.round((completedSubTasks / totalSubTasks) * 100)
-      : 0;
-
   return (
     <main className="flex-1 flex flex-col min-w-0">
       <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950/50 pr-4">
@@ -48,7 +30,6 @@ export const BoardCanvas: React.FC = () => {
           <BoardTitle
             boardId={board.id}
             boardTitle={board.title}
-            handleUpdateBoardTitle={handleUpdateBoardTitle}
           />
         </div>
         <button
@@ -59,45 +40,7 @@ export const BoardCanvas: React.FC = () => {
           {showMetrics ? "Hide Analytics" : "Show Analytics"}
         </button>
       </div>
-      {showMetrics && (
-        <div className=" bg-zinc-950 border-b border-zinc-800 p-4 grid grid-cols-3 gap-4 z-30 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="bg-zinc-900 p-3 rounded-lg border border-zinc-800">
-            <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider">
-              Total Active Tasks
-            </p>
-            <p className="text-2xl font-bold text-zinc-100 mt-1">
-              {totalTasks}
-            </p>
-          </div>
-          <div className="bg-zinc-900 p-3 rounded-lg border border-zinc-800">
-            <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider">
-              Subtask Breakdown
-            </p>
-            <p className="text-2xl font-bold text-zinc-100 mt-1">
-              {completedSubTasks}{" "}
-              <span className="text-sm text-zinc-500 font-normal">
-                / {totalSubTasks} done
-              </span>
-            </p>
-          </div>
-          <div className="bg-zinc-900 p-3 rounded-lg border border-zinc-800">
-            <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider">
-              Board Sprint Progress
-            </p>
-            <div className="flex items-center gap-3 mt-1">
-              <p className="text-2xl font-bold text-blue-400">
-                {completionPercentage}%
-              </p>
-              <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-blue-500 transition-all duration-500"
-                  style={{ width: `${completionPercentage}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {showMetrics && <Metrics boardId={activeBoardId} />}
       <Droppable droppableId="column" direction="horizontal" type="COLUMN">
         {(provided) => (
           <div
@@ -110,8 +53,6 @@ export const BoardCanvas: React.FC = () => {
                 key={columnId}
                 index={index}
                 columnId={columnId}
-                columnTitle={state.columns.entities[columnId].title}
-                taskIds={state.columns.entities[columnId].taskIds}
               />
             ))}
             {provided.placeholder}

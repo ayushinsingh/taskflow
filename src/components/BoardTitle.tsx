@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-
+import { useAppDispatch } from "../store";
+import { updateBoardTitle } from "../store/slices/boardSlice";
 interface BoardTitleProps {
   boardId: string;
   boardTitle: string;
-  handleUpdateBoardTitle: (boardId: string, boardTitle: string) => void;
 }
 
 export const BoardTitle: React.FC<BoardTitleProps> = ({
   boardId,
   boardTitle,
-  handleUpdateBoardTitle,
 }) => {
+  const dispatch = useAppDispatch();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
 
@@ -29,12 +29,12 @@ export const BoardTitle: React.FC<BoardTitleProps> = ({
           onChange={(e) => setTitle(e.target.value)}
           onBlur={() => {
             setIsEditing(false);
-            handleUpdateBoardTitle(boardId, title);
+            dispatch(updateBoardTitle({boardId, title}));
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               setIsEditing(false);
-              handleUpdateBoardTitle(boardId, title);
+              dispatch(updateBoardTitle({boardId, title}));
             }
             if (e.key === "Escape") {
               setTitle(boardTitle);

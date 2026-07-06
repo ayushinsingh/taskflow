@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import { useBoardData } from "../context/BoardContext";
 import { Trash2 } from "lucide-react";
 import type { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
+import { useAppDispatch, useAppSelector } from "../store";
+import { updateColumnTitle, deleteColumn } from "../store/slices/columnSlice";
+import { unlinkColumnFromBoard } from "../store/slices/boardSlice";
+import { removeTasks } from "../store/slices/taskSlice";
+import { removeSubTasks } from "../store/slices/subTaskSlice";
 
 interface ColumnTitleProps {
   columnId: string;
@@ -14,9 +18,20 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
   columnTitle,
   dragProps
 }) => {
-  const { handleDeleteColumn, handleUpdateColumnTitle } = useBoardData();
+  const dispatch = useAppDispatch();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
+  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
+  const taskIds = useAppSelector((state) => state.columns.entities[columnId].taskIds);
+  const tasks = useAppSelector((state) => state.tasks)
+  const subTaskIds = taskIds.flatMap((taskId) => tasks.entities[taskId].subTaskIds);
+
+  const handleColumnDelete = () => {
+    dispatch(unlinkColumnFromBoard({boardId: activeBoardId, columnId}));
+    dispatch(removeTasks(taskIds));
+    dispatch(removeSubTasks(subTaskIds));
+    dispatch(deleteColumn(columnId));
+  }
 
   useEffect(() => {
     setTitle(columnTitle);
@@ -32,12 +47,12 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
         onChange={(e) => setTitle(e.target.value)}
         onBlur={() => {
           setIsEditing(false);
-          handleUpdateColumnTitle(columnId, title);
+          dispatch(updateColumnTitle({columnId, title}));
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             setIsEditing(false);
-            handleUpdateColumnTitle(columnId, title);
+            dispatch(updateColumnTitle({columnId, title}));
           }
           if (e.key === "Escape") {
             setTitle(columnTitle);
@@ -61,7 +76,7 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
       <button
         className="opacity-0 group-hover:opacity-100 p-2 mr-1 text-zinc-500 hover:text-red-400 transition-all"
         aria-label={`Delete Column: ${columnTitle}`}
-        onClick={() => handleDeleteColumn(columnId)}
+        onClick={() => handleColumnDelete()}
       >
         <Trash2 className="h-4 w-4" />
       </button>

@@ -2,18 +2,17 @@ import React from "react";
 import { TaskCard } from "./TaskCard";
 import { AddTaskInput } from "./AddTaskInput";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
-import { Trash2 } from "lucide-react";
 import { ColumnTitle } from "./ColumnTitle";
+import { useAppSelector } from "../store";
 
 interface ColumnLaneProps {
   index: number;
   columnId: string;
-  columnTitle: string;
-  taskIds: string[];
 }
 
 export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
-  ({ index, columnId, columnTitle, taskIds }) => {
+  ({ index, columnId }) => {
+    const column = useAppSelector((state) => state.columns.entities[columnId]);
     return (
       <Draggable draggableId={columnId} index={index}>
         {(provided, snapshot) => (
@@ -22,7 +21,7 @@ export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
             {...provided.draggableProps}
             className={`group w-80 shrink-0 bg-zinc-950 rounded-lg p-4 flex flex-col max-h-full ${snapshot.isDragging ? "shadow-xl border-blue-500/50 bg-zinc-850" : ""}`}
           >
-            <ColumnTitle columnId={columnId} columnTitle={columnTitle} dragProps={provided.dragHandleProps} />
+            <ColumnTitle columnId={columnId} columnTitle={column.title} dragProps={provided.dragHandleProps} />
             <Droppable droppableId={columnId} type="TASK">
               {(provided) => (
                 <div
@@ -30,7 +29,7 @@ export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
                   {...provided.droppableProps}
                   className="space-y-3 overflow-y-auto flex-1 mb-4"
                 >
-                  {taskIds.map((taskId, index) => (
+                  {column.taskIds.map((taskId, index) => (
                     <TaskCard
                       key={taskId}
                       taskId={taskId}

@@ -26,6 +26,7 @@ export const columnSlice = createSlice({
       columnsAdapter.updateOne(state, { id: columnId, changes: { title } });
     },
     deleteColumn: columnsAdapter.removeOne,
+    deleteColumns: columnsAdapter.removeMany,
     linkTaskToColumn: (
       state,
       action: PayloadAction<{ columnId: string; taskId: string }>,
@@ -86,6 +87,7 @@ export const {
   addColumn,
   updateColumnTitle,
   deleteColumn,
+  deleteColumns,
   linkTaskToColumn,
   unlinkTaskFromColumn,
   moveTaskCard,

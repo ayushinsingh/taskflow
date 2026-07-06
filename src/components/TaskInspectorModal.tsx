@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
-import type { NormalizedTask, Priority } from "../types/normalized.type";
+import type { Priority } from "../types/normalized.type";
 import { MetricCard } from "./MetricCard";
-import { useBoardData } from "../context/BoardContext";
 import { AddSubTaskInput } from "./AddSubTaskInput";
+import { useAppDispatch, useAppSelector } from "../store";
+import { updateTask, closeTaskInspector } from "../store/slices/taskSlice";
+import { toggleSubTask } from "../store/slices/subTaskSlice";
 
 interface TaskInspectorModalProp {
-  task: NormalizedTask;
-  onUpdateTask: (taskId: string, updatedTask: NormalizedTask) => void;
-  onClose: () => void;
 }
 
 export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({
-  task,
-  onUpdateTask,
-  onClose,
 }) => {
-  const { state, handleToggleSubTask } = useBoardData();
+  const activeTaskId = useAppSelector((state) => state.tasks.activeTaskId);
+  if(!activeTaskId) return null;
+  const dispatch = useAppDispatch();
+  const task = useAppSelector((state) => state.tasks.entities[activeTaskId]);
+  const subTasks = useAppSelector((state) => state.subTasks);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
 
@@ -25,12 +25,12 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({
   }, [task.id]);
 
   const handlePriorityChange = (priority: Priority) => {
-    onUpdateTask(task.id, { ...task, priority });
+    dispatch(updateTask({taskId: activeTaskId, changes: {priority}}));
   };
 
   const handleBlur = (key: string, value: string) => {
     if (key === "title" && !value) return;
-    onUpdateTask(task.id, { ...task, [key]: value });
+    dispatch(updateTask({taskId: activeTaskId, changes: {[key]: value}}));
   };
 
   return (
@@ -45,7 +45,7 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({
             </span>
           </div>
           <button
-            onClick={() => onClose()}
+            onClick={() => dispatch(closeTaskInspector())}
             className="group flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-all focus:outline-none"
           >
             <span className="text-[10px] text-zinc-500 group-hover:text-zinc-300 transition-colors">
@@ -125,7 +125,7 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({
             </h3>
           </div>
           {task.subTaskIds.map((subTaskId) => {
-            const subTask = state.subTasks.entities[subTaskId];
+            const subTask = subTasks.entities[subTaskId];
             if (!subTask) return null;
 
             return (
@@ -140,7 +140,7 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({
                   <input
                     type="checkbox"
                     checked={subTask.isCompleted}
-                    onChange={() => handleToggleSubTask(subTaskId)}
+                    onChange={() => dispatch(toggleSubTask(subTaskId))}
                     className="peer h-4 w-4 shrink-0 appearance-none rounded border border-zinc-700 bg-zinc-950 checked:border-blue-500 checked:bg-blue-600 hover:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500/30 transition-all cursor-pointer"
                   />
                   {/* Absolute Custom Checkmark Overlay Symbol */}
@@ -165,7 +165,7 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({
                       ? "line-through text-zinc-600 font-normal decoration-zinc-700 decoration-1"
                       : "group-hover:text-zinc-100"
                   }`}
-                  onClick={() => handleToggleSubTask(subTaskId)}
+                  onClick={() => dispatch(toggleSubTask(subTaskId))}
                 >
                   {subTask.title}
                 </span>
@@ -178,7 +178,7 @@ export const TaskInspectorModal: React.FC<TaskInspectorModalProp> = ({
           title="Completed Sub Tasks"
           value={task.subTaskIds.reduce(
             (total, current) =>
-              state.subTasks.entities[current].isCompleted ? total + 1 : total,
+              subTasks.entities[current].isCompleted ? total + 1 : total,
             0,
           )}
           total={task.subTaskIds.length}

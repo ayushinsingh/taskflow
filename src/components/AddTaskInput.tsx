@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { useBoardData } from "../context/BoardContext";
+import { addTask } from "../store/slices/taskSlice";
+import { linkTaskToColumn } from "../store/slices/columnSlice";
+import { useAppDispatch } from "../store";
+import type { NormalizedTask } from "../types/normalized.type";
 
 export const AddTaskInput: React.FC<{ columnId: string }> = ({ columnId }) => {
-  const { handleAddTask } = useBoardData();
+  const dispatch = useAppDispatch();
   const [title, setTitle] = useState("");
   return (
     <div className="mt-auto pt-2 border-t border-zinc-900">
@@ -14,7 +17,15 @@ export const AddTaskInput: React.FC<{ columnId: string }> = ({ columnId }) => {
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            handleAddTask(columnId, title);
+            const newTask: NormalizedTask = {
+              id: crypto.randomUUID(),
+              title,
+              description: "",
+              priority: "medium",
+              subTaskIds: []
+            }
+            dispatch(addTask(newTask));
+            dispatch(linkTaskToColumn({columnId, taskId: newTask.id}))
             setTitle("");
           }
         }}

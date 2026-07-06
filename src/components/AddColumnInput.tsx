@@ -1,9 +1,14 @@
 import { useState } from "react";
-import { useBoardData } from "../context/BoardContext";
+import { useAppDispatch, useAppSelector } from "../store";
+import { addColumn } from "../store/slices/columnSlice";
+import { linkColumnToBoard } from "../store/slices/boardSlice";
+import type { NormalizedColumn } from "../types/normalized.type";
 
 export const AddColumnInput: React.FC = () => {
-  const { handleCreateColumn } = useBoardData();
+  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
+  const dispatch = useAppDispatch();
   const [title, setTitle] = useState("");
+  
   return (
     <div className="w-80 shrink-0 pt-2 border-t border-zinc-900">
       <input
@@ -14,7 +19,13 @@ export const AddColumnInput: React.FC = () => {
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            handleCreateColumn(title);
+            const newColumn: NormalizedColumn = {
+              id: crypto.randomUUID(),
+              title: title,
+              taskIds: []
+            }
+            dispatch(addColumn(newColumn));
+            dispatch(linkColumnToBoard({boardId: activeBoardId, columnId: newColumn.id}));
             setTitle("");
           }
         }}

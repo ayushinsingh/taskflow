@@ -1,7 +1,11 @@
 import React from "react";
 import { Draggable } from "@hello-pangea/dnd";
-import { useBoardData } from "../context/BoardContext";
 import { Trash2 } from "lucide-react";
+import { openTaskInspector, deleteTask } from "../store/slices/taskSlice";
+import { useAppDispatch, useAppSelector } from "../store";
+import { removeSubTasks } from "../store/slices/subTaskSlice";
+import { unlinkTaskFromColumn } from "../store/slices/columnSlice";
+
 
 interface TaskCardProp {
   taskId: string;
@@ -14,11 +18,12 @@ export const TaskCard: React.FC<TaskCardProp> = ({
   columnId,
   index,
 }) => {
-  const { state, openTaskInspector, handleDeleteTask } = useBoardData();
-  const task = state.tasks.entities[taskId];
+  const dispatch = useAppDispatch();
+  const task = useAppSelector((state) => (state.tasks.entities[taskId]));
+  const subTasks = useAppSelector((state) => state.subTasks);
   const totalCompletedTasks = task.subTaskIds.reduce(
     (total, current) =>
-      state.subTasks.entities[current].isCompleted ? total + 1 : total,
+      subTasks.entities[current].isCompleted ? total + 1 : total,
     0,
   );
   if (!task) return null;
@@ -40,7 +45,7 @@ export const TaskCard: React.FC<TaskCardProp> = ({
               ? "shadow-xl border-blue-500/50 bg-zinc-850"
               : ""
           }`}
-          onClick={() => openTaskInspector(taskId)}
+          onClick={() => dispatch(openTaskInspector(taskId))}
         >
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-medium text-zinc-200 mb-1">{task.title}</h4>
@@ -49,7 +54,9 @@ export const TaskCard: React.FC<TaskCardProp> = ({
               aria-label={`Delete Column: ${task.title}`}
               onClick={(e) => {
                 e.stopPropagation();
-                handleDeleteTask(taskId, columnId);
+                dispatch(deleteTask(taskId));
+                dispatch(removeSubTasks(task.subTaskIds));
+                dispatch(unlinkTaskFromColumn({taskId, columnId}));
               }}
             >
               <Trash2 className="h-4 w-4" />

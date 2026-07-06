@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { useBoardData } from "../context/BoardContext";
+import { addSubTask } from "../store/slices/subTaskSlice";
+import { useAppDispatch } from "../store";
+import type { NormalizedSubTask } from "../types/normalized.type";
+import { linkSubTaskToTask } from "../store/slices/taskSlice";
 
 export const AddSubTaskInput: React.FC<{ taskId: string }> = ({ taskId }) => {
-  const { handleAddSubTask } = useBoardData();
+  const dispatch = useAppDispatch();
   const [title, setTitle] = useState("");
   return (
     <div className="mt-auto pt-2 border-t border-zinc-900">
@@ -14,7 +17,14 @@ export const AddSubTaskInput: React.FC<{ taskId: string }> = ({ taskId }) => {
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            handleAddSubTask(taskId, title);
+            const newSubTask: NormalizedSubTask = {
+              id: crypto.randomUUID(),
+              title,
+              isCompleted: false
+            };
+
+            dispatch(addSubTask(newSubTask));
+            dispatch(linkSubTaskToTask({taskId, subTaskId: newSubTask.id}));
             setTitle("");
           }
         }}
