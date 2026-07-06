@@ -16,26 +16,33 @@ interface ColumnTitleProps {
 export const ColumnTitle: React.FC<ColumnTitleProps> = ({
   columnId,
   columnTitle,
-  dragProps
+  dragProps,
 }) => {
   const dispatch = useAppDispatch();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
-  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
-  const taskIds = useAppSelector((state) => state.columns.entities[columnId].taskIds);
-  const tasks = useAppSelector((state) => state.tasks)
-  const subTaskIds = taskIds.flatMap((taskId) => tasks.entities[taskId].subTaskIds);
 
-  const handleColumnDelete = () => {
-    dispatch(unlinkColumnFromBoard({boardId: activeBoardId, columnId}));
-    dispatch(removeTasks(taskIds));
-    dispatch(removeSubTasks(subTaskIds));
-    dispatch(deleteColumn(columnId));
-  }
+  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
+  const column = useAppSelector((state) => state.columns.entities[columnId]);
+  const tasks = useAppSelector((state) => state.tasks);
 
   useEffect(() => {
     setTitle(columnTitle);
   }, [columnTitle]);
+
+  if (!column) return null;
+
+  const handleColumnDelete = () => {
+    const taskIds = column.taskIds;
+    const subTaskIds = taskIds.flatMap(
+      (taskId) => tasks.entities[taskId]?.subTaskIds || [],
+    );
+
+    dispatch(unlinkColumnFromBoard({ boardId: activeBoardId, columnId }));
+    if (subTaskIds.length > 0) dispatch(removeSubTasks(subTaskIds));
+    if (taskIds.length > 0) dispatch(removeTasks(taskIds));
+    dispatch(deleteColumn(columnId));
+  };
 
   if (isEditing) {
     return (
@@ -47,38 +54,37 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
         onChange={(e) => setTitle(e.target.value)}
         onBlur={() => {
           setIsEditing(false);
-          dispatch(updateColumnTitle({columnId, title}));
+          if (title.trim() && title.trim() !== columnTitle) {
+            dispatch(updateColumnTitle({ columnId, title: title.trim() }));
+          }
         }}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            setIsEditing(false);
-            dispatch(updateColumnTitle({columnId, title}));
-          }
+          if (e.key === "Enter") setIsEditing(false);
           if (e.key === "Escape") {
             setTitle(columnTitle);
             setIsEditing(false);
           }
         }}
-        className="bg-zinc-800 text-zinc-100 border border-zinc-700 rounded px-2 py-0.5 outline-none focus:border-blue-500 mb-3"
+        className="bg-zinc-800 text-zinc-100 border border-zinc-700 rounded px-2 py-0.5 text-sm font-medium outline-none focus:border-blue-500 mb-3 w-full"
       />
     );
   }
 
   return (
-    <div className="flex items-center justify-between mb-3">
+    <div className="flex items-center justify-between mb-3 group/title">
       <h3
         {...dragProps}
         onDoubleClick={() => setIsEditing(true)}
-        className="font-semibold text-zinc-300 text-center px-1"
+        className="font-semibold text-zinc-300 text-sm px-1 cursor-grab active:cursor-grabbing truncate flex-1"
       >
         {columnTitle}
       </h3>
       <button
-        className="opacity-0 group-hover:opacity-100 p-2 mr-1 text-zinc-500 hover:text-red-400 transition-all"
-        aria-label={`Delete Column: ${columnTitle}`}
-        onClick={() => handleColumnDelete()}
+        onClick={handleColumnDelete}
+        className="opacity-0 group-hover/title:opacity-100 p-1.5 rounded-md text-zinc-500 hover:bg-zinc-900 hover:text-red-400 transition-all shrink-0"
+        aria-label="Delete column"
       >
-        <Trash2 className="h-4 w-4" />
+        <Trash2 className="h-3.5 w-3.5" />
       </button>
     </div>
   );
