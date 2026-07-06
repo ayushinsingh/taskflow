@@ -29,9 +29,6 @@ export const boardSlice = createSlice({
       boardsAdapter.updateOne(state, { id: boardId, changes: { title } });
     },
     deleteBoard: boardsAdapter.removeOne,
-    setActiveBoardId: (state, action: PayloadAction<string>) => {
-      state.activeBoardId = action.payload;
-    },
     changeBoard: (state, action: PayloadAction<string>) => {
       state.activeBoardId = action.payload;
     },
@@ -77,7 +74,6 @@ export const {
   addBoard,
   updateBoardTitle,
   deleteBoard,
-  setActiveBoardId,
   changeBoard,
   linkColumnToBoard,
   unlinkColumnFromBoard,

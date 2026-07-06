@@ -19,7 +19,7 @@ const localStorageMiddleware: Middleware = (storeApi) => (next) => (action) => {
   return result;
 };
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   subTasks: subTaskReducer,
   tasks: taskReducer,
   columns: columnReducer,
@@ -27,7 +27,7 @@ const rootReducer = combineReducers({
   workspaces: workspaceReducer,
 });
 
-type RootStateType = ReturnType<typeof rootReducer>
+export type RootStateType = ReturnType<typeof rootReducer>
 
 const getPreloadedState = (): RootStateType | undefined => {
   try {
