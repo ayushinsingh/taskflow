@@ -1,5 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit";
-import type { RootState } from "./index";
+import type { RootState } from "../index";
 
 const selectBoards = (state: RootState) => state.boards;
 const selectColumns = (state: RootState) => state.columns;

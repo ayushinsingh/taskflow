@@ -1,5 +1,5 @@
 import { useAppSelector } from "../store";
-import { selectBoardMetrics } from "../store/selectors";
+import { selectBoardMetrics } from "../store/selectors/selectors";
 
 export const Metrics: React.FC = ({}) => {
   const { totalTasks, totalSubTasks, completedSubTasks, completionPercentage } =
