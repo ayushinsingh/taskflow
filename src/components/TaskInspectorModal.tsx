@@ -143,7 +143,7 @@ export const TaskInspectorModal: React.FC = () => {
                 );
               })}
             </div>
-            <AddSubTaskInput taskId={task.id} />
+            <AddSubTaskInput />
           </div>
         </div>
 

@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { addSubTask } from "../store/slices/subTaskSlice";
-import { useAppDispatch } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import type { NormalizedSubTask } from "../types/normalized.type";
 import { linkSubTaskToTask } from "../store/slices/taskSlice";
 
-export const AddSubTaskInput: React.FC<{ taskId: string }> = ({ taskId }) => {
+export const AddSubTaskInput: React.FC = ({ }) => {
+  const activeTaskId = useAppSelector((state) => state.tasks.activeTaskId);
+  if(!activeTaskId) return
   const dispatch = useAppDispatch();
   const [title, setTitle] = useState("");
   return (
     <div className="mt-auto pt-2 border-t border-zinc-900">
       <input
-        id={`new-task-input-${taskId}`}
+        id={`new-task-input-${activeTaskId}`}
         type="text"
         placeholder="+ Add new sub task..."
         value={title}
@@ -24,7 +26,7 @@ export const AddSubTaskInput: React.FC<{ taskId: string }> = ({ taskId }) => {
             };
 
             dispatch(addSubTask(newSubTask));
-            dispatch(linkSubTaskToTask({taskId, subTaskId: newSubTask.id}));
+            dispatch(linkSubTaskToTask({taskId: activeTaskId, subTaskId: newSubTask.id}));
             setTitle("");
           }
         }}
