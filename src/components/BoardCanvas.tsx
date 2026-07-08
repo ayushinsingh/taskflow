@@ -8,7 +8,7 @@ import { useAppSelector } from "../store";
 import { Metrics } from "./Metrics";
 
 export const BoardCanvas: React.FC = () => {
-  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
+  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId) as string;
   const board = useAppSelector((state) => state.boards.entities[activeBoardId]);
   const [showMetrics, setShowMetrics] = useState<boolean>(false);
 

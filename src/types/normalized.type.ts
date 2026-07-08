@@ -40,6 +40,6 @@ export interface GlobalStateStore {
   columns: EntityState<NormalizedColumn>;
   tasks: EntityState<NormalizedTask>;
   subTasks: EntityState<NormalizedSubTask>;
-  activeBoardId: string;
+  activeBoardId: string | null;
   activeTaskId: string | null;
 }

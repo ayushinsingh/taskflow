@@ -5,7 +5,7 @@ import { linkColumnToBoard } from "../store/slices/boardSlice";
 import type { NormalizedColumn } from "../types/normalized.type";
 
 export const AddColumnInput: React.FC = () => {
-  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
+  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId) as string;
   const dispatch = useAppDispatch();
   const [title, setTitle] = useState("");
   

@@ -22,7 +22,7 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
 
-  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
+  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId) as string;
   const column = useAppSelector((state) => state.columns.entities[columnId]);
   const tasks = useAppSelector((state) => state.tasks);
 
