@@ -4,8 +4,6 @@ import type { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
 import { useAppDispatch, useAppSelector } from "../store";
 import { updateColumnTitle, deleteColumn } from "../store/slices/columnSlice";
 import { unlinkColumnFromBoard } from "../store/slices/boardSlice";
-import { removeTasks } from "../store/slices/taskSlice";
-import { removeSubTasks } from "../store/slices/subTaskSlice";
 
 interface ColumnTitleProps {
   columnId: string;
@@ -24,7 +22,6 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
 
   const activeBoardId = useAppSelector((state) => state.boards.activeBoardId) as string;
   const column = useAppSelector((state) => state.columns.entities[columnId]);
-  const tasks = useAppSelector((state) => state.tasks);
 
   useEffect(() => {
     setTitle(columnTitle);

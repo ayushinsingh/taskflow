@@ -18,8 +18,6 @@ export const Sidebar: React.FC = React.memo(() => {
       : undefined,
   );
   const boards = useAppSelector((state) => state.boards);
-  const columns = useAppSelector((state) => state.columns);
-  const tasks = useAppSelector((state) => state.tasks);
 
   if (!activeWorkspace || !activeWorkspaceId) {
     return <div className="text-zinc-600 text-xs p-3">No workspaces found</div>;

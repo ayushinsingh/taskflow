@@ -2,7 +2,6 @@ import React from "react";
 import { Trash2 } from "lucide-react";
 import { deleteTask } from "../store/slices/taskSlice";
 import { useAppDispatch, useAppSelector } from "../store";
-import { removeSubTasks } from "../store/slices/subTaskSlice";
 import { unlinkTaskFromColumn } from "../store/slices/columnSlice";
 
 interface TaskCardProp {
