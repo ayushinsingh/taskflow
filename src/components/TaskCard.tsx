@@ -1,7 +1,6 @@
 import React from "react";
-import { Draggable } from "@hello-pangea/dnd";
 import { Trash2 } from "lucide-react";
-import { openTaskInspector, deleteTask } from "../store/slices/taskSlice";
+import { deleteTask } from "../store/slices/taskSlice";
 import { useAppDispatch, useAppSelector } from "../store";
 import { removeSubTasks } from "../store/slices/subTaskSlice";
 import { unlinkTaskFromColumn } from "../store/slices/columnSlice";
@@ -9,14 +8,9 @@ import { unlinkTaskFromColumn } from "../store/slices/columnSlice";
 interface TaskCardProp {
   taskId: string;
   columnId: string;
-  index: number;
 }
 
-export const TaskCard: React.FC<TaskCardProp> = ({
-  taskId,
-  columnId,
-  index,
-}) => {
+export const TaskCard: React.FC<TaskCardProp> = ({ taskId, columnId }) => {
   const dispatch = useAppDispatch();
   const task = useAppSelector((state) => state.tasks.entities[taskId]);
   const subTasks = useAppSelector((state) => state.subTasks);
@@ -37,56 +31,42 @@ export const TaskCard: React.FC<TaskCardProp> = ({
   };
 
   return (
-    <Draggable draggableId={taskId} index={index}>
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          className={`group/task bg-zinc-900 border border-zinc-800/80 p-3 rounded-md shadow-sm cursor-grab active:cursor-grabbing hover:border-zinc-700 transition-colors ${
-            snapshot.isDragging
-              ? "shadow-lg border-blue-500/50 bg-zinc-850"
-              : ""
-          }`}
-          onClick={() => dispatch(openTaskInspector(taskId))}
+    <>
+      <div className="flex items-center justify-between mb-1">
+        <h4 className="font-medium text-zinc-200 truncate pr-2">
+          {task.title}
+        </h4>
+        <button
+          className="opacity-0 group-hover/task:opacity-100 p-1 rounded hover:bg-zinc-800 text-zinc-500 hover:text-red-400 transition-all shrink-0"
+          aria-label="Delete Task"
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch(unlinkTaskFromColumn({ columnId, taskId }));
+            dispatch(removeSubTasks(task.subTaskIds));
+            dispatch(deleteTask(taskId));
+          }}
         >
-          <div className="flex items-center justify-between mb-1">
-            <h4 className="font-medium text-zinc-200 truncate pr-2">
-              {task.title}
-            </h4>
-            <button
-              className="opacity-0 group-hover/task:opacity-100 p-1 rounded hover:bg-zinc-800 text-zinc-500 hover:text-red-400 transition-all shrink-0"
-              aria-label="Delete Task"
-              onClick={(e) => {
-                e.stopPropagation();
-                dispatch(unlinkTaskFromColumn({ columnId, taskId }));
-                dispatch(removeSubTasks(task.subTaskIds));
-                dispatch(deleteTask(taskId));
-              }}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          {task.description && (
-            <p className="text-xs text-zinc-400 line-clamp-2 mb-2">
-              {task.description}
-            </p>
-          )}
-          <div className="mt-2 flex items-center justify-between text-[11px] text-zinc-500 font-medium font-mono">
-            <span
-              className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${activeColorMap[task.priority] || activeColorMap.medium}`}
-            >
-              {task.priority}
-            </span>
-            {task.subTaskIds.length > 0 && (
-              <span className="text-zinc-400">
-                {totalCompletedTasks} <span className="text-zinc-600">/</span>{" "}
-                {task.subTaskIds.length}
-              </span>
-            )}
-          </div>
-        </div>
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      {task.description && (
+        <p className="text-xs text-zinc-400 line-clamp-2 mb-2">
+          {task.description}
+        </p>
       )}
-    </Draggable>
+      <div className="mt-2 flex items-center justify-between text-[11px] text-zinc-500 font-medium font-mono">
+        <span
+          className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${activeColorMap[task.priority] || activeColorMap.medium}`}
+        >
+          {task.priority}
+        </span>
+        {task.subTaskIds.length > 0 && (
+          <span className="text-zinc-400">
+            {totalCompletedTasks} <span className="text-zinc-600">/</span>{" "}
+            {task.subTaskIds.length}
+          </span>
+        )}
+      </div>
+    </>
   );
 };

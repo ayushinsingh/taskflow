@@ -16,7 +16,7 @@ export default function App() {
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;
-    if (!result.destination) return;
+    if (!result.destination || !activeBoardId) return;
     if (
       source.droppableId === destination!.droppableId &&
       source.index === destination!.index

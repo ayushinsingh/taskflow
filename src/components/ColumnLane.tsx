@@ -29,12 +29,11 @@ export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
                   {...provided.droppableProps}
                   className="space-y-3 overflow-y-auto flex-1 mb-4"
                 >
-                  {column.taskIds.map((taskId, index) => (
+                  {column.taskIds.map((taskId) => (
                     <TaskCard
                       key={taskId}
                       taskId={taskId}
                       columnId={columnId}
-                      index={index}
                     />
                   ))}
                   {provided.placeholder}
