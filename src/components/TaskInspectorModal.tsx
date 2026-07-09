@@ -75,10 +75,11 @@ export const TaskInspectorModal: React.FC = () => {
           />
 
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+            <label htmlFor="description" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
               Description
             </label>
             <textarea
+              id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => handleBlur("description", description)}
@@ -124,13 +125,14 @@ export const TaskInspectorModal: React.FC = () => {
                     className="group flex items-center gap-3 bg-zinc-900/50 border border-zinc-850/60 px-3 py-2 rounded-md hover:bg-zinc-900 transition-colors"
                   >
                     <input
+                      id={subTaskId}
                       type="checkbox"
                       checked={subTask.isCompleted}
                       onChange={() => dispatch(toggleSubTask(subTaskId))}
                       className="rounded border-zinc-700 text-blue-600 focus:ring-blue-500/20 bg-zinc-800 h-4 w-4 cursor-pointer"
                     />
-                    <span
-                      onClick={() => dispatch(toggleSubTask(subTaskId))}
+                    <label
+                      htmlFor={subTaskId}
                       className={`text-xs font-medium text-zinc-300 cursor-pointer select-none truncate ${
                         subTask.isCompleted
                           ? "line-through text-zinc-600 decoration-zinc-700"
@@ -138,7 +140,7 @@ export const TaskInspectorModal: React.FC = () => {
                       }`}
                     >
                       {subTask.title}
-                    </span>
+                    </label>
                   </div>
                 );
               })}
