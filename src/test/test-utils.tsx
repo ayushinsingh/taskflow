@@ -4,6 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 
 import { rootReducer, type RootStateType } from "../store";
+import { cascadeDeleteMiddleware } from "../store/middleware/cascadeDeleteMiddleware";
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
   preloadedState?: Partial<RootStateType>;
@@ -14,6 +15,8 @@ export function setupTestStore(preloadedState?: Partial<RootStateType>) {
   return configureStore({
     reducer: rootReducer,
     preloadedState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(cascadeDeleteMiddleware),
   });
 }
 

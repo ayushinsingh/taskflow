@@ -42,7 +42,6 @@ export const TaskCard: React.FC<TaskCardProp> = ({ taskId, columnId }) => {
           onClick={(e) => {
             e.stopPropagation();
             dispatch(unlinkTaskFromColumn({ columnId, taskId }));
-            dispatch(removeSubTasks(task.subTaskIds));
             dispatch(deleteTask(taskId));
           }}
         >

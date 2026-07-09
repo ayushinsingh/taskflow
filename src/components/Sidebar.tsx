@@ -3,9 +3,6 @@ import { AddBoardInput } from "./AddBoardInput";
 import { Trash2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { changeBoard, deleteBoard } from "../store/slices/boardSlice";
-import { deleteColumns } from "../store/slices/columnSlice";
-import { removeTasks } from "../store/slices/taskSlice";
-import { removeSubTasks } from "../store/slices/subTaskSlice";
 import { unlinkBoardFromWorkspace } from "../store/slices/workspaceSlice";
 
 export const Sidebar: React.FC = React.memo(() => {
@@ -52,23 +49,12 @@ export const Sidebar: React.FC = React.memo(() => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                const columnIds = board.columnIds;
-                const taskIds = columnIds.flatMap(
-                  (colId) => columns.entities[colId]?.taskIds || [],
-                );
-                const subTaskIds = taskIds.flatMap(
-                  (taskId) => tasks.entities[taskId]?.subTaskIds || [],
-                );
-
                 dispatch(
                   unlinkBoardFromWorkspace({
                     workspaceId: activeWorkspaceId,
                     boardId,
                   }),
                 );
-                if (subTaskIds.length > 0) dispatch(removeSubTasks(subTaskIds));
-                if (taskIds.length > 0) dispatch(removeTasks(taskIds));
-                if (columnIds.length > 0) dispatch(deleteColumns(columnIds));
                 dispatch(deleteBoard(boardId));
               }}
               className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-400 transition-all shrink-0"

@@ -19,6 +19,7 @@ export const workspaceSlice = createSlice({
   initialState,
   reducers: {
     addWorkspace: workspaceAdapter.addOne,
+    deleteWorkspace: workspaceAdapter.removeOne,
     linkBoardToWorkspace: (
       state,
       action: PayloadAction<{ workspaceId: string; boardId: string }>,
@@ -42,8 +43,12 @@ export const workspaceSlice = createSlice({
   },
 });
 
-export const { addWorkspace, linkBoardToWorkspace, unlinkBoardFromWorkspace } =
-  workspaceSlice.actions;
+export const {
+  addWorkspace,
+  deleteWorkspace,
+  linkBoardToWorkspace,
+  unlinkBoardFromWorkspace,
+} = workspaceSlice.actions;
 
 export const workspaceSelectors = workspaceAdapter.getSelectors<RootState>(
   (state) => state.workspaces,

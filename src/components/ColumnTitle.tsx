@@ -33,14 +33,7 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
   if (!column) return null;
 
   const handleColumnDelete = () => {
-    const taskIds = column.taskIds;
-    const subTaskIds = taskIds.flatMap(
-      (taskId) => tasks.entities[taskId]?.subTaskIds || [],
-    );
-
     dispatch(unlinkColumnFromBoard({ boardId: activeBoardId, columnId }));
-    if (subTaskIds.length > 0) dispatch(removeSubTasks(subTaskIds));
-    if (taskIds.length > 0) dispatch(removeTasks(taskIds));
     dispatch(deleteColumn(columnId));
   };
 

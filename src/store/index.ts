@@ -5,6 +5,7 @@ import taskReducer from "./slices/taskSlice";
 import columnReducer from "./slices/columnSlice";
 import boardReducer from "./slices/boardSlice";
 import workspaceReducer from "./slices/workspaceSlice";
+import { cascadeDeleteMiddleware } from "./middleware/cascadeDeleteMiddleware";
 
 const localStorageMiddleware: Middleware = (storeApi) => (next) => (action) => {
   // Pass the action down the chain first so the state gets modified
@@ -51,7 +52,7 @@ export const store = configureStore({
   },
   preloadedState: getPreloadedState(),
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(localStorageMiddleware),
+    getDefaultMiddleware().concat(cascadeDeleteMiddleware, localStorageMiddleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>
