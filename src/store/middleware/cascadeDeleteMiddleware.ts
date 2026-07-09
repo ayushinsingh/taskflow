@@ -57,26 +57,6 @@ const collectBoardDescendants = (state: RootStateType, boardIds: string[]) => {
 };
 
 /**
- * A deleted child leaves a stale id inside its parent's reference array. The
- * child entities don't carry a back-pointer to their parent, so we locate the
- * owner by scanning the parent slice for the one still referencing the child.
- */
-const findWorkspaceOwningBoard = (state: RootStateType, boardId: string) =>
-  state.workspaces.ids.find((id) =>
-    state.workspaces.entities[id]?.boardIds.includes(boardId),
-  );
-
-const findBoardOwningColumn = (state: RootStateType, columnId: string) =>
-  state.boards.ids.find((id) =>
-    state.boards.entities[id]?.columnIds.includes(columnId),
-  );
-
-const findColumnOwningTask = (state: RootStateType, taskId: string) =>
-  state.columns.ids.find((id) =>
-    state.columns.entities[id]?.taskIds.includes(taskId),
-  );
-
-/**
  * Garbage-collects the entity tree when a container is deleted:
  *   - deleteWorkspace -> its boards, columns, tasks, subtasks
  *   - deleteBoard     -> its columns, tasks, subtasks
