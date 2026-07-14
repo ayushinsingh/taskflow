@@ -3,14 +3,21 @@ import {
   createEntityAdapter,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import type { NormalizedWorkspace } from "../../types/normalized.type";
+import type {
+  NormalizedWorkspace,
+  LoadStatus,
+} from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
+import { fetchWorkspaces } from "../thunks/boardThunks";
 
 const workspaceAdapter = createEntityAdapter<NormalizedWorkspace>();
 
 const initialState = workspaceAdapter.setAll(
-  workspaceAdapter.getInitialState(),
+  workspaceAdapter.getInitialState({
+    status: "idle" as LoadStatus,
+    error: null as string | null,
+  }),
   initalNormalizedState.workspaces.entities as Record<string, NormalizedWorkspace>,
 );
 
@@ -40,6 +47,21 @@ export const workspaceSlice = createSlice({
         ws.boardIds = ws.boardIds.filter((id) => id !== boardId);
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchWorkspaces.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchWorkspaces.fulfilled, (state, action) => {
+        workspaceAdapter.setAll(state, action.payload.workspaces);
+        state.status = "succeeded";
+      })
+      .addCase(fetchWorkspaces.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = (action.payload as string) ?? "Failed to fetch workspaces";
+      });
   },
 });
 

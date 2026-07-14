@@ -6,6 +6,7 @@ import {
 import type { NormalizedSubTask } from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
+import { fetchBoardWithId } from "../thunks/boardThunks";
 
 const subTasksAdapter = createEntityAdapter<NormalizedSubTask>();
 
@@ -28,6 +29,11 @@ export const subTaskSlice = createSlice({
     },
     removeSubTasks: subTasksAdapter.removeMany,
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchBoardWithId.fulfilled, (state, action) => {
+      subTasksAdapter.upsertMany(state, action.payload.subtasks)
+    })
+  }
 });
 
 export const { addSubTask, toggleSubTask, removeSubTasks } =

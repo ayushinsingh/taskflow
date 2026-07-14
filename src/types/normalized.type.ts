@@ -1,4 +1,5 @@
 export type Priority = 'low' | 'medium' | 'high' | 'urgent';
+export type LoadStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
 export interface NormalizedWorkspace {
   id: string;
   name: string;

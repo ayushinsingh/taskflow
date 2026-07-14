@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import { Sidebar } from "./components/Sidebar";
 import { BoardCanvas } from "./components/BoardCanvas";
@@ -5,6 +6,7 @@ import { TaskInspectorModal } from "./components/TaskInspectorModal";
 import { useAppDispatch, useAppSelector } from "./store";
 import { moveColumnLane } from "./store/slices/boardSlice";
 import { moveTaskCard } from "./store/slices/columnSlice";
+import { fetchWorkspaces, fetchBoardWithId } from "./store/thunks/boardThunks";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -13,6 +15,16 @@ export default function App() {
   const activeWorkspace = useAppSelector(
     (state) => state.workspaces.entities[state.workspaces.ids[0]],
   );
+
+  useEffect(() => {
+    dispatch(fetchWorkspaces());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (activeBoardId) {
+      dispatch(fetchBoardWithId(activeBoardId));
+    }
+  }, [dispatch, activeBoardId]);
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;

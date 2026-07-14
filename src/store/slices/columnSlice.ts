@@ -6,6 +6,7 @@ import {
 import type { NormalizedColumn } from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
+import { fetchBoardWithId } from "../thunks/boardThunks";
 
 const columnsAdapter = createEntityAdapter<NormalizedColumn>();
 const initialState = columnsAdapter.setAll(
@@ -81,6 +82,11 @@ export const columnSlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchBoardWithId.fulfilled, (state, action) => {
+      columnsAdapter.upsertMany(state, action.payload.columns)
+    })
+  }
 });
 
 export const {
