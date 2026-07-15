@@ -9,7 +9,9 @@ describe("oardCanvas Drag-and-Drop Orchestration Tests", () => {
     boards: {
       ids: ["b-1"],
       activeBoardId: "b-1",
-      entities: { "b-1": { id: "b-1", title: "Project Board", columnIds: ["col-todo", "col-done"] } }
+      entities: { "b-1": { id: "b-1", title: "Project Board", columnIds: ["col-todo", "col-done"] } },
+      status: "idle",
+      error: null,
     },
     columns: {
       ids: ["col-todo", "col-done"],

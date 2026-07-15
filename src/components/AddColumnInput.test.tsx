@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "../test/test-utils";
 import { AddColumnInput } from "./AddColumnInput";
 import { screen } from "@testing-library/react";
+import type { RootStateType } from "../store";
 
 describe("AddColumn Input Unit Tests", () => {
   it("should update its text field state correctly when user types characters", async () => {
@@ -17,7 +18,7 @@ describe("AddColumn Input Unit Tests", () => {
 
   it("should clear the text field and append a new column pointer to the active board state when enter is pressed", async () => {
     const user = userEvent.setup();
-    const preloadedState = {
+    const preloadedState: Partial<RootStateType> = {
       boards: {
         ids: ["board-1"],
         activeBoardId: "board-1",
@@ -28,6 +29,8 @@ describe("AddColumn Input Unit Tests", () => {
             columnIds: [],
           },
         },
+        status: "idle",
+        error: null,
       },
       columns: { ids: [], entities: {} },
       tasks: { activeTaskId: null, ids: [], entities: {} },

@@ -38,6 +38,8 @@ describe("boardSlice Unit Tests", () => {
             columnIds: [],
           },
         },
+        status: "idle",
+        error: null,
       },
     };
     const store = setupTestStore(preloadedState);
@@ -66,6 +68,8 @@ describe("boardSlice Unit Tests", () => {
             columnIds: [],
           },
         },
+        status: "idle",
+        error: null,
       },
     };
 
@@ -94,6 +98,8 @@ describe("boardSlice Unit Tests", () => {
             columnIds: [],
           },
         },
+        status: "idle",
+        error: null,
       },
     };
 
@@ -121,6 +127,8 @@ describe("boardSlice Unit Tests", () => {
             columnIds: [],
           },
         },
+        status: "idle",
+        error: null,
       },
     };
 
@@ -148,6 +156,8 @@ describe("boardSlice Unit Tests", () => {
             columnIds: [],
           },
         },
+        status: "idle",
+        error: null,
       },
     };
 
@@ -174,7 +184,9 @@ describe("boardSlice Unit Tests", () => {
             title: "board 1",
             columnIds: ["Col-A", "Col-B", "Col-C"]
           },
-        }
+        },
+        status: "idle",
+        error: null,
       }
     }
 

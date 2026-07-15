@@ -9,6 +9,8 @@ describe("Task 4: Centralized Selector Memoization and Stats Tests", () => {
       entities: {
         "ws-1": { id: "ws-1", name: "Engineering Ops", boardIds: ["board-1"] },
       },
+      status: "idle",
+      error: null,
     },
     boards: {
       ids: ["board-1"],
@@ -20,6 +22,8 @@ describe("Task 4: Centralized Selector Memoization and Stats Tests", () => {
           columnIds: ["col-1"],
         },
       },
+      status: "idle",
+      error: null,
     },
     columns: {
       ids: ["col-1"],
@@ -90,6 +94,8 @@ describe("Task 4: Centralized Selector Memoization and Stats Tests", () => {
             boardIds: ["board-1"],
           },
         },
+        status: "idle",
+        error: null,
       },
     };
 

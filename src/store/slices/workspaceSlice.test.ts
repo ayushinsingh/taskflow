@@ -10,7 +10,9 @@ describe("Task 9: Multi-Slice Cascading Deletion Unit Tests", () => {
       ids: ["ws-engineering"],
       entities: {
         "ws-engineering": { id: "ws-engineering", name: "Engineering Core", boardIds: ["board-sprint-1"] }
-      }
+      },
+      status: "idle",
+      error: null,
     },
     boards: {
       ids: ["board-sprint-1", "board-unrelated"],
@@ -18,7 +20,9 @@ describe("Task 9: Multi-Slice Cascading Deletion Unit Tests", () => {
       entities: {
         "board-sprint-1": { id: "board-sprint-1", title: "Sprint 1 Canvas", columnIds: ["col-todo"] },
         "board-unrelated": { id: "board-unrelated", title: "Marketing Campaign", columnIds: ["col-marketing"] }
-      }
+      },
+      status: "idle",
+      error: null,
     },
     columns: {
       ids: ["col-todo", "col-marketing"],

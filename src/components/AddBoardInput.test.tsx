@@ -28,11 +28,15 @@ describe("AddColumn Input Unit Tests", () => {
             boardIds: []
           }
         },
+        status: "idle",
+        error: null,
       },
       boards: {
         ids: [],
         entities: {},
         activeBoardId: null,
+        status: "idle",
+        error: null,
       },
       columns: {
         ids: [],
