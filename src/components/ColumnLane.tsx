@@ -36,7 +36,7 @@ export const ColumnLane: React.FC<ColumnLaneProps> = React.memo(
                   className="space-y-3 overflow-y-auto flex-1 mb-4"
                 >
                   {column.taskIds.map((taskId, index) => (
-                    <Draggable draggableId={taskId} index={index}>
+                    <Draggable draggableId={taskId} index={index} key={index}>
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
