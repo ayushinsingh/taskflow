@@ -2,8 +2,9 @@ import React from "react";
 import { AddBoardInput } from "./AddBoardInput";
 import { Trash2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store";
-import { changeBoard, deleteBoard } from "../store/slices/boardSlice";
-import { unlinkBoardFromWorkspace } from "../store/slices/workspaceSlice";
+import { changeBoard } from "../store/slices/boardSlice";
+import {  } from "../store/slices/workspaceSlice";
+import { deleteBoard } from "../store/thunks/boardThunks";
 
 export const Sidebar: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
@@ -47,13 +48,7 @@ export const Sidebar: React.FC = React.memo(() => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch(
-                  unlinkBoardFromWorkspace({
-                    workspaceId: activeWorkspaceId,
-                    boardId,
-                  }),
-                );
-                dispatch(deleteBoard(boardId));
+                dispatch(deleteBoard({boardId, workspaceId: activeWorkspaceId}))
               }}
               className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-400 transition-all shrink-0"
               aria-label="Delete Board"

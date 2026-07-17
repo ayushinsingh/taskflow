@@ -136,3 +136,12 @@ export const createBoard = createAsyncThunk("app/createBoard", async (boardData:
     return rejectWithValue(message);
   }
 })
+export const deleteBoard = createAsyncThunk("app/deleteBoard", async (boardData: {boardId: string; workspaceId: string;}, { rejectWithValue }) => {
+  try {
+    await boardService.deleteBoard(boardData.boardId);
+    return boardData;
+  } catch (error) {
+    const message = error instanceof Error ? error.message: "Failed to create board";
+    return rejectWithValue(message);
+  }
+})
