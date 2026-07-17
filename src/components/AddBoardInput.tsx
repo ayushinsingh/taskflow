@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
-import { addBoard } from "../store/slices/boardSlice";
-import type { NormalizedBoard } from "../types/normalized.type";
-import { linkBoardToWorkspace } from "../store/slices/workspaceSlice";
-
+import { createBoard } from "../store/thunks/boardThunks";
 export const AddBoardInput: React.FC = () => {
   const workspaceId = useAppSelector((state) => state.workspaces.ids[0]);
   const dispatch = useAppDispatch();
@@ -18,13 +15,8 @@ export const AddBoardInput: React.FC = () => {
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            const newBoard: NormalizedBoard = {
-              id: crypto.randomUUID(),
-              title: title,
-              columnIds: []
-            }
-            dispatch(addBoard(newBoard));
-            dispatch(linkBoardToWorkspace({workspaceId, boardId: newBoard.id}))
+
+            dispatch(createBoard({workspaceId, title}))
             setTitle("");
           }
         }}

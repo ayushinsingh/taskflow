@@ -6,7 +6,7 @@ import {
 import type { NormalizedBoard, LoadStatus } from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
-import { fetchBoardWithId, fetchWorkspaces } from "../thunks/boardThunks";
+import { createBoard, fetchBoardWithId, fetchWorkspaces } from "../thunks/boardThunks";
 
 const boardsAdapter = createEntityAdapter<NormalizedBoard>();
 
@@ -66,7 +66,7 @@ export const boardSlice = createSlice({
     ) => {
       const { boardId, sourceIndex, destinationIndex } = action.payload;
       const board = state.entities[boardId];
-      if(!board) return;
+      if (!board) return;
       const columnId = board.columnIds[sourceIndex];
       board.columnIds.splice(sourceIndex, 1);
       board.columnIds.splice(destinationIndex, 0, columnId);
@@ -93,7 +93,9 @@ export const boardSlice = createSlice({
       .addCase(fetchBoardWithId.rejected, (state, action) => {
         state.status = "failed";
         state.error = (action.payload as string) ?? "Failed to fetch board";
-      });
+      }).addCase(createBoard.fulfilled, (state, action) => {
+        boardsAdapter.addOne(state, action.payload.board);
+      })
   },
 });
 

@@ -9,7 +9,7 @@ import type {
 } from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
-import { fetchWorkspaces } from "../thunks/boardThunks";
+import { createBoard, fetchWorkspaces } from "../thunks/boardThunks";
 
 const workspaceAdapter = createEntityAdapter<NormalizedWorkspace>();
 
@@ -27,16 +27,6 @@ export const workspaceSlice = createSlice({
   reducers: {
     addWorkspace: workspaceAdapter.addOne,
     deleteWorkspace: workspaceAdapter.removeOne,
-    linkBoardToWorkspace: (
-      state,
-      action: PayloadAction<{ workspaceId: string; boardId: string }>,
-    ) => {
-      const { workspaceId, boardId } = action.payload;
-      const ws = state.entities[workspaceId];
-      if (ws) {
-        ws.boardIds.push(boardId);
-      }
-    },
     unlinkBoardFromWorkspace: (
       state,
       action: PayloadAction<{ workspaceId: string; boardId: string }>,
@@ -61,14 +51,15 @@ export const workspaceSlice = createSlice({
       .addCase(fetchWorkspaces.rejected, (state, action) => {
         state.status = "failed";
         state.error = (action.payload as string) ?? "Failed to fetch workspaces";
-      });
+      }).addCase(createBoard.fulfilled, (state, action) => {
+        state.entities[action.payload.workspaceId].boardIds.push(action.payload.board.id);
+      })
   },
 });
 
 export const {
   addWorkspace,
   deleteWorkspace,
-  linkBoardToWorkspace,
   unlinkBoardFromWorkspace,
 } = workspaceSlice.actions;
 

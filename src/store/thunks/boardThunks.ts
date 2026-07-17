@@ -44,6 +44,10 @@ interface RawBoard extends RawSummary {
   columns: RawColumns[];
 }
 
+interface CreateBoardResult extends RawSummary {
+  workspaceId: string
+}
+
 /**
  * The FLAT, normalized payload we hand to the slices.
  * Becomes `action.payload` on `fetchWorkspaces.fulfilled`.
@@ -117,3 +121,18 @@ export const fetchBoardWithId = createAsyncThunk(
     },
   },
 );
+
+export const createBoard = createAsyncThunk("app/createBoard", async (boardData: {title: string; workspaceId: string;}, { rejectWithValue }) => {
+  try {
+    const newBoard: CreateBoardResult = await boardService.createBoard(boardData);
+    const normalizedBoard: NormalizedBoard = {
+      id: newBoard.id,
+      title: newBoard.title,
+      columnIds: []
+    }
+    return {workspaceId: newBoard.workspaceId, board: normalizedBoard};
+  } catch (error) {
+    const message = error instanceof Error ? error.message: "Failed to create board";
+    return rejectWithValue(message);
+  }
+})
