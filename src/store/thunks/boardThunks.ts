@@ -48,11 +48,10 @@ interface CreateBoardResult extends RawSummary {
   workspaceId: string
 }
 
-/**
- * The FLAT, normalized payload we hand to the slices.
- * Becomes `action.payload` on `fetchWorkspaces.fulfilled`.
- * Note it feeds TWO slices (workspaces + boards) plus the active board id.
- */
+interface CreateColumnResult extends RawSummary {
+  boardId: string;
+}
+
 export interface FetchWorkspacesResult {
   workspaces: NormalizedWorkspace[];
   boards: NormalizedBoard[];
@@ -136,10 +135,36 @@ export const createBoard = createAsyncThunk("app/createBoard", async (boardData:
     return rejectWithValue(message);
   }
 })
+
 export const deleteBoard = createAsyncThunk("app/deleteBoard", async (boardData: {boardId: string; workspaceId: string;}, { rejectWithValue }) => {
   try {
     await boardService.deleteBoard(boardData.boardId);
     return boardData;
+  } catch (error) {
+    const message = error instanceof Error ? error.message: "Failed to create board";
+    return rejectWithValue(message);
+  }
+})
+
+export const createColumn = createAsyncThunk("app/createColumn", async (columnData: {title: string; boardId: string;}, { rejectWithValue }) => {
+  try {
+    const newBoard: CreateColumnResult = await boardService.createColumn(columnData);
+    const normalizedColumn: NormalizedColumn = {
+      id: newBoard.id,
+      title: newBoard.title,
+      taskIds: []
+    }
+    return {boardId: newBoard.boardId, column: normalizedColumn};
+  } catch (error) {
+    const message = error instanceof Error ? error.message: "Failed to create board";
+    return rejectWithValue(message);
+  }
+})
+
+export const deleteColumn = createAsyncThunk("app/deleteColumn", async (columnData: {boardId: string; columnId: string;}, { rejectWithValue }) => {
+  try {
+    await boardService.deleteColumn(columnData.columnId);
+    return columnData;
   } catch (error) {
     const message = error instanceof Error ? error.message: "Failed to create board";
     return rejectWithValue(message);

@@ -6,7 +6,7 @@ import {
 import type { NormalizedBoard, LoadStatus } from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
-import { createBoard, deleteBoard, fetchBoardWithId, fetchWorkspaces } from "../thunks/boardThunks";
+import { createBoard, createColumn, deleteBoard, deleteColumn, fetchBoardWithId, fetchWorkspaces } from "../thunks/boardThunks";
 
 const boardsAdapter = createEntityAdapter<NormalizedBoard>();
 
@@ -34,26 +34,6 @@ export const boardSlice = createSlice({
     deleteBoards: boardsAdapter.removeMany,
     changeBoard: (state, action: PayloadAction<string>) => {
       state.activeBoardId = action.payload;
-    },
-    linkColumnToBoard: (
-      state,
-      action: PayloadAction<{ boardId: string; columnId: string }>,
-    ) => {
-      const { boardId, columnId } = action.payload;
-      const board = state.entities[boardId];
-      if (board) {
-        board.columnIds.push(columnId);
-      }
-    },
-    unlinkColumnFromBoard: (
-      state,
-      action: PayloadAction<{ boardId: string; columnId: string }>,
-    ) => {
-      const { boardId, columnId } = action.payload;
-      const board = state.entities[boardId];
-      if (board) {
-        board.columnIds = board.columnIds.filter((id) => id !== columnId);
-      }
     },
     moveColumnLane: (
       state,
@@ -96,6 +76,18 @@ export const boardSlice = createSlice({
         boardsAdapter.addOne(state, action.payload.board);
       }).addCase(deleteBoard.fulfilled, (state, action) => {
         boardsAdapter.removeOne(state, action.payload.boardId);
+      }).addCase(createColumn.fulfilled, (state, action) => {
+        const { boardId, column } = action.payload;
+        const board = state.entities[boardId];
+        if (board) {
+          board.columnIds.push(column.id);
+        }
+      }).addCase(deleteColumn.fulfilled, (state, action) => {
+        const {boardId, columnId} = action.payload;
+        const board = state.entities[boardId];
+        if (board) {
+          board.columnIds = board.columnIds.filter((id) => id !== columnId);
+        }
       })
   },
 });
@@ -105,8 +97,6 @@ export const {
   updateBoardTitle,
   deleteBoards,
   changeBoard,
-  linkColumnToBoard,
-  unlinkColumnFromBoard,
   moveColumnLane
 } = boardSlice.actions;
 

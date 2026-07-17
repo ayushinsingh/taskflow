@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import type { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
 import { useAppDispatch, useAppSelector } from "../store";
-import { updateColumnTitle, deleteColumn } from "../store/slices/columnSlice";
-import { unlinkColumnFromBoard } from "../store/slices/boardSlice";
+import { updateColumnTitle } from "../store/slices/columnSlice";
+import { deleteColumn } from "../store/thunks/boardThunks";
 
 interface ColumnTitleProps {
   columnId: string;
@@ -20,7 +20,9 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
 
-  const activeBoardId = useAppSelector((state) => state.boards.activeBoardId) as string;
+  const activeBoardId = useAppSelector(
+    (state) => state.boards.activeBoardId,
+  ) as string;
   const column = useAppSelector((state) => state.columns.entities[columnId]);
 
   useEffect(() => {
@@ -30,8 +32,7 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
   if (!column) return null;
 
   const handleColumnDelete = () => {
-    dispatch(unlinkColumnFromBoard({ boardId: activeBoardId, columnId }));
-    dispatch(deleteColumn(columnId));
+    dispatch(deleteColumn({ boardId: activeBoardId, columnId }));
   };
 
   if (isEditing) {

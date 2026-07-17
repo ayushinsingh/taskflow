@@ -6,7 +6,7 @@ import {
 import type { NormalizedColumn } from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
-import { fetchBoardWithId } from "../thunks/boardThunks";
+import { createColumn, fetchBoardWithId } from "../thunks/boardThunks";
 
 const columnsAdapter = createEntityAdapter<NormalizedColumn>();
 const initialState = columnsAdapter.setAll(
@@ -18,7 +18,6 @@ export const columnSlice = createSlice({
   name: "columns",
   initialState,
   reducers: {
-    addColumn: columnsAdapter.addOne,
     updateColumnTitle: (
       state,
       action: PayloadAction<{ columnId: string; title: string }>,
@@ -26,7 +25,6 @@ export const columnSlice = createSlice({
       const { columnId, title } = action.payload;
       columnsAdapter.updateOne(state, { id: columnId, changes: { title } });
     },
-    deleteColumn: columnsAdapter.removeOne,
     deleteColumns: columnsAdapter.removeMany,
     linkTaskToColumn: (
       state,
@@ -85,14 +83,15 @@ export const columnSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchBoardWithId.fulfilled, (state, action) => {
       columnsAdapter.upsertMany(state, action.payload.columns)
+    }).addCase(createColumn.fulfilled, (state, action) => {
+      const { column } = action.payload;
+      columnsAdapter.addOne(state, column);
     })
   }
 });
 
 export const {
-  addColumn,
   updateColumnTitle,
-  deleteColumn,
   deleteColumns,
   linkTaskToColumn,
   unlinkTaskFromColumn,

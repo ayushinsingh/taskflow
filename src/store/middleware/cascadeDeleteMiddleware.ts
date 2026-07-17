@@ -7,12 +7,11 @@ import {
   deleteBoards,
 } from "../slices/boardSlice";
 import {
-  deleteColumn,
   deleteColumns,
 } from "../slices/columnSlice";
 import { deleteTask, removeTasks } from "../slices/taskSlice";
 import { removeSubTasks } from "../slices/subTaskSlice";
-import { deleteBoard } from "../thunks/boardThunks";
+import { deleteBoard, deleteColumn } from "../thunks/boardThunks";
 
 /**
  * The collectors below walk one layer of the normalized tree and gather every
@@ -97,8 +96,8 @@ export const cascadeDeleteMiddleware: Middleware =
       }
     }
 
-    if (deleteColumn.match(action)) {
-      const columnId = action.payload;
+    if (deleteColumn.fulfilled.match(action)) {
+      const {columnId} = action.payload;
       if (state.columns.entities[columnId]) {
         const { taskIds, subTaskIds } = collectColumnDescendants(state, [
           columnId,
