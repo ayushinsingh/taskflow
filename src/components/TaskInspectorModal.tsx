@@ -3,9 +3,9 @@ import type { Priority } from "../types/normalized.type";
 import { MetricCard } from "./MetricCard";
 import { AddSubTaskInput } from "./AddSubTaskInput";
 import { useAppDispatch, useAppSelector } from "../store";
-import { updateTask, closeTaskInspector } from "../store/slices/taskSlice";
-import { toggleSubTask } from "../store/slices/subTaskSlice";
+import { closeTaskInspector } from "../store/slices/taskSlice";
 import { X } from "lucide-react";
+import { toggleSubtask, updateTask } from "../store/thunks/boardThunks";
 
 export const TaskInspectorModal: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -128,7 +128,7 @@ export const TaskInspectorModal: React.FC = () => {
                       id={subTaskId}
                       type="checkbox"
                       checked={subTask.isCompleted}
-                      onChange={() => dispatch(toggleSubTask(subTaskId))}
+                      onChange={() => dispatch(toggleSubtask(subTaskId))}
                       className="rounded border-zinc-700 text-blue-600 focus:ring-blue-500/20 bg-zinc-800 h-4 w-4 cursor-pointer"
                     />
                     <label

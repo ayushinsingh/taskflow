@@ -9,9 +9,9 @@ import {
 import {
   deleteColumns,
 } from "../slices/columnSlice";
-import { deleteTask, removeTasks } from "../slices/taskSlice";
+import {removeTasks } from "../slices/taskSlice";
 import { removeSubTasks } from "../slices/subTaskSlice";
-import { deleteBoard, deleteColumn } from "../thunks/boardThunks";
+import { deleteBoard, deleteColumn, deleteTask } from "../thunks/boardThunks";
 
 /**
  * The collectors below walk one layer of the normalized tree and gather every
@@ -107,8 +107,8 @@ export const cascadeDeleteMiddleware: Middleware =
       }
     }
 
-    if (deleteTask.match(action)) {
-      const taskId = action.payload;
+    if (deleteTask.fulfilled.match(action)) {
+      const {taskId} = action.payload;
       if (state.tasks.entities[taskId]) {
         const { subTaskIds } = collectTaskDescendants(state, [taskId]);
         storeApi.dispatch(removeSubTasks(subTaskIds));

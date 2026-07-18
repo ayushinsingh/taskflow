@@ -1,8 +1,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
-import { deleteTask } from "../store/slices/taskSlice";
 import { useAppDispatch, useAppSelector } from "../store";
-import { unlinkTaskFromColumn } from "../store/slices/columnSlice";
+import { deleteTask } from "../store/thunks/boardThunks";
 
 interface TaskCardProp {
   taskId: string;
@@ -40,8 +39,7 @@ export const TaskCard: React.FC<TaskCardProp> = ({ taskId, columnId }) => {
           aria-label="Delete Task"
           onClick={(e) => {
             e.stopPropagation();
-            dispatch(unlinkTaskFromColumn({ columnId, taskId }));
-            dispatch(deleteTask(taskId));
+            dispatch(deleteTask({taskId, columnId}));
           }}
         >
           <Trash2 className="h-3.5 w-3.5" />

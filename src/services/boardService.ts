@@ -1,5 +1,5 @@
 import type { WorkspacesResponse } from "../types/api/workspace.types";
-import type { Priority } from "../types/normalized.type";
+import type { NormalizedTask, Priority } from "../types/normalized.type";
 import api from "./api";
 
 export const boardService = {
@@ -39,8 +39,8 @@ export const boardService = {
     const response = await api.post("/boards/tasks", boardData);
     return response.data;
   },
-  updateTask: async (boardData: {title: string, taskId: string; description?: string; priority?: Priority, }) => {
-    const response = await api.patch("/boards/tasks", boardData);
+  updateTask: async (taskId: string, changes: Partial<Omit<NormalizedTask, "subTaskIds">>) => {
+    const response = await api.patch(`/boards/tasks/${taskId}`, changes);
     return response.data;
   },
   deleteTask: async (taskId: string) => {

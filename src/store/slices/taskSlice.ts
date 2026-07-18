@@ -6,7 +6,7 @@ import {
 import type { NormalizedTask } from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
-import { fetchBoardWithId } from "../thunks/boardThunks";
+import { createSubtask, createTask, deleteTask, fetchBoardWithId, updateTask } from "../thunks/boardThunks";
 
 const tasksAdapter = createEntityAdapter<NormalizedTask>();
 
@@ -22,17 +22,6 @@ export const taskSlice = createSlice({
   initialState,
   reducers: {
     addTask: tasksAdapter.addOne,
-    updateTask: (
-      state,
-      action: PayloadAction<{
-        taskId: string;
-        changes: Partial<NormalizedTask>;
-      }>,
-    ) => {
-      const { taskId, changes } = action.payload;
-      tasksAdapter.updateOne(state, { id: taskId, changes });
-    },
-    deleteTask: tasksAdapter.removeOne,
     removeTasks: tasksAdapter.removeMany,
     linkSubTaskToTask: (
       state,
@@ -54,11 +43,25 @@ export const taskSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchBoardWithId.fulfilled, (state, action) => {
       tasksAdapter.upsertMany(state, action.payload.tasks)
+    }).addCase(createTask.fulfilled, (state, action) => {
+      tasksAdapter.addOne(state, action.payload.task);
+    }).addCase(updateTask.fulfilled, (state, action) => {
+      const task = action.payload;
+      tasksAdapter.updateOne(state, {id: task.id, changes: task});
+    }).addCase(deleteTask.fulfilled, (state, action) => {
+      const { taskId } = action.payload;
+      tasksAdapter.removeOne(state, taskId);
+    }).addCase(createSubtask.fulfilled, (state, action) => {
+      const {taskId, subtask} = action.payload;
+      const task = state.entities[taskId];
+      if(task) {
+        task.subTaskIds.push(subtask.id);
+      }
     })
   }
 });
 
-export const { addTask, updateTask, deleteTask, removeTasks, openTaskInspector, closeTaskInspector, linkSubTaskToTask } =
+export const { addTask, removeTasks, openTaskInspector, closeTaskInspector, linkSubTaskToTask } =
   taskSlice.actions;
 
 export const taskSelectors = tasksAdapter.getSelectors<RootState>(

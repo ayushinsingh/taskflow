@@ -6,7 +6,7 @@ import {
 import type { NormalizedColumn } from "../../types/normalized.type";
 import type { RootState } from "../index";
 import { initalNormalizedState } from "../../data/normalizedMockData";
-import { createColumn, fetchBoardWithId } from "../thunks/boardThunks";
+import { createColumn, createTask, deleteTask, fetchBoardWithId, updateColumn } from "../thunks/boardThunks";
 
 const columnsAdapter = createEntityAdapter<NormalizedColumn>();
 const initialState = columnsAdapter.setAll(
@@ -18,34 +18,7 @@ export const columnSlice = createSlice({
   name: "columns",
   initialState,
   reducers: {
-    updateColumnTitle: (
-      state,
-      action: PayloadAction<{ columnId: string; title: string }>,
-    ) => {
-      const { columnId, title } = action.payload;
-      columnsAdapter.updateOne(state, { id: columnId, changes: { title } });
-    },
     deleteColumns: columnsAdapter.removeMany,
-    linkTaskToColumn: (
-      state,
-      action: PayloadAction<{ columnId: string; taskId: string }>,
-    ) => {
-      const { columnId, taskId } = action.payload;
-      const column = state.entities[columnId];
-      if (column) {
-        column.taskIds.push(taskId);
-      }
-    },
-    unlinkTaskFromColumn: (
-      state,
-      action: PayloadAction<{ columnId: string; taskId: string }>,
-    ) => {
-      const { columnId, taskId } = action.payload;
-      const column = state.entities[columnId];
-      if (column) {
-        column.taskIds = column.taskIds.filter((id) => id !== taskId);
-      }
-    },
     moveTaskCard: (
       state,
       action: PayloadAction<{
@@ -86,15 +59,27 @@ export const columnSlice = createSlice({
     }).addCase(createColumn.fulfilled, (state, action) => {
       const { column } = action.payload;
       columnsAdapter.addOne(state, column);
+    }).addCase(updateColumn.fulfilled, (state, action) => {
+      const {id, title} = action.payload;
+      columnsAdapter.updateOne(state, { id, changes: { title } });
+    }).addCase(createTask.fulfilled, (state, action) => {
+      const {columnId, task} = action.payload;
+      const column = state.entities[columnId];
+      if (column) {
+        column.taskIds.push(task.id);
+      }
+    }).addCase(deleteTask.fulfilled, (state, action) => {
+      const { columnId, taskId } = action.payload;
+      const column = state.entities[columnId];
+      if (column) {
+        column.taskIds = column.taskIds.filter((id) => id !== taskId);
+      }
     })
   }
 });
 
 export const {
-  updateColumnTitle,
   deleteColumns,
-  linkTaskToColumn,
-  unlinkTaskFromColumn,
   moveTaskCard,
 } = columnSlice.actions;
 export const columnSelectors = columnsAdapter.getSelectors<RootState>(

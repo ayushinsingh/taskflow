@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import type { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
 import { useAppDispatch, useAppSelector } from "../store";
-import { updateColumnTitle } from "../store/slices/columnSlice";
-import { deleteColumn } from "../store/thunks/boardThunks";
+import { deleteColumn, updateColumn } from "../store/thunks/boardThunks";
 
 interface ColumnTitleProps {
   columnId: string;
@@ -46,7 +45,7 @@ export const ColumnTitle: React.FC<ColumnTitleProps> = ({
         onBlur={() => {
           setIsEditing(false);
           if (title.trim() && title.trim() !== columnTitle) {
-            dispatch(updateColumnTitle({ columnId, title: title.trim() }));
+            dispatch(updateColumn({ columnId, title: title.trim() }));
           }
         }}
         onKeyDown={(e) => {

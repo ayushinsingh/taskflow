@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { addTask } from "../store/slices/taskSlice";
-import { linkTaskToColumn } from "../store/slices/columnSlice";
 import { useAppDispatch } from "../store";
-import type { NormalizedTask } from "../types/normalized.type";
+import { createTask } from "../store/thunks/boardThunks";
 
 export const AddTaskInput: React.FC<{ columnId: string }> = ({ columnId }) => {
   const dispatch = useAppDispatch();
@@ -17,15 +15,7 @@ export const AddTaskInput: React.FC<{ columnId: string }> = ({ columnId }) => {
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            const newTask: NormalizedTask = {
-              id: crypto.randomUUID(),
-              title,
-              description: "",
-              priority: "medium",
-              subTaskIds: []
-            }
-            dispatch(addTask(newTask));
-            dispatch(linkTaskToColumn({columnId, taskId: newTask.id}))
+            dispatch(createTask({title, columnId}));
             setTitle("");
           }
         }}

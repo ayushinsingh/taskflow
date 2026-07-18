@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { addSubTask } from "../store/slices/subTaskSlice";
 import { useAppDispatch, useAppSelector } from "../store";
-import type { NormalizedSubTask } from "../types/normalized.type";
-import { linkSubTaskToTask } from "../store/slices/taskSlice";
+import { createSubtask } from "../store/thunks/boardThunks";
 
 export const AddSubTaskInput: React.FC = ({ }) => {
   const activeTaskId = useAppSelector((state) => state.tasks.activeTaskId);
@@ -19,14 +17,7 @@ export const AddSubTaskInput: React.FC = ({ }) => {
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            const newSubTask: NormalizedSubTask = {
-              id: crypto.randomUUID(),
-              title,
-              isCompleted: false
-            };
-
-            dispatch(addSubTask(newSubTask));
-            dispatch(linkSubTaskToTask({taskId: activeTaskId, subTaskId: newSubTask.id}));
+            dispatch(createSubtask({title, taskId: activeTaskId}));
             setTitle("");
           }
         }}
