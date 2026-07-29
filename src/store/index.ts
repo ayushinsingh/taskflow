@@ -4,6 +4,7 @@ import subTaskReducer from "./slices/subTaskSlice";
 import taskReducer from "./slices/taskSlice";
 import columnReducer from "./slices/columnSlice";
 import boardReducer from "./slices/boardSlice";
+import authReducer from "./slices/authSlice";
 import workspaceReducer from "./slices/workspaceSlice";
 import { cascadeDeleteMiddleware } from "./middleware/cascadeDeleteMiddleware";
 
@@ -12,10 +13,10 @@ const localStorageMiddleware: Middleware = (storeApi) => (next) => (action) => {
   const result = next(action);
   
   // Grab the fresh state snapshot post-reducer update
-  const state = storeApi.getState();
+  const {auth, ...rest} = storeApi.getState() as RootState;
   
   // Mirror the full state tree out to the client browser storage
-  localStorage.setItem("kanban_redux_workspace_store", JSON.stringify(state));
+  localStorage.setItem("kanban_redux_workspace_store", JSON.stringify(rest));
   
   return result;
 };
@@ -26,6 +27,7 @@ export const rootReducer = combineReducers({
   columns: columnReducer,
   boards: boardReducer,
   workspaces: workspaceReducer,
+  auth: authReducer,
 });
 
 export type RootStateType = ReturnType<typeof rootReducer>
@@ -43,13 +45,7 @@ const getPreloadedState = (): RootStateType | undefined => {
 };
 
 export const store = configureStore({
-  reducer: {
-    subTasks: subTaskReducer,
-    tasks: taskReducer,
-    columns: columnReducer,
-    boards: boardReducer,
-    workspaces: workspaceReducer
-  },
+  reducer: rootReducer,
   preloadedState: getPreloadedState(),
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(cascadeDeleteMiddleware, localStorageMiddleware),

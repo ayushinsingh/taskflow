@@ -8,55 +8,55 @@ export const boardService = {
     return response.data;
   },
   getBoard: async (boardId: string) => {
-    const reponse = await api.get(`/boards/${boardId}`);
+    const reponse = await api.get(`/api/boards/${boardId}`);
     return reponse.data;
   },
   createBoard: async (boardData: {title: string; workspaceId: string;}) => {
-    const response = await api.post('/boards', boardData);
+    const response = await api.post('/api/boards', boardData);
     return response.data;
   },
   deleteBoard: async (boardId: string) => {
-    const response = await api.delete(`/boards/${boardId}`);
+    const response = await api.delete(`/api/boards/${boardId}`);
     return response.data;
   },
   createColumn: async (columnData: { title: string; boardId: string }) => {
-    const response = await api.post("/boards/columns", columnData);
+    const response = await api.post("/api/boards/columns", columnData);
     return response.data;
   },
   updateColumn: async (columnData: {title: string, columnId: string}) => {
-    const response = await api.patch("/boards/columns", columnData);
+    const response = await api.patch("/api/boards/columns", columnData);
     return response.data;
   },
   reorderColumns: async (columns: Array<{id: string, position: number}>) => {
-    const response = await api.patch("/boards/columns/reorder", {columns});
+    const response = await api.patch("/api/boards/columns/reorder", {columns});
     return response.data;
   },
   deleteColumn: async (columnId: string) => {
-    const response = await api.delete(`/boards/columns/${columnId}`);
+    const response = await api.delete(`/api/boards/columns/${columnId}`);
     return response.data;
   },
   createTask: async (boardData: {title: string, columnId: string; description?: string; priority?: Priority, }) => {
-    const response = await api.post("/boards/tasks", boardData);
+    const response = await api.post("/api/boards/tasks", boardData);
     return response.data;
   },
   updateTask: async (taskId: string, changes: Partial<Omit<NormalizedTask, "subTaskIds">>) => {
-    const response = await api.patch(`/boards/tasks/${taskId}`, changes);
+    const response = await api.patch(`/api/boards/tasks/${taskId}`, changes);
     return response.data;
   },
   deleteTask: async (taskId: string) => {
-    const response = await api.delete(`/boards/tasks/${taskId}`);
+    const response = await api.delete(`/api/boards/tasks/${taskId}`);
     return response.data;
   },
   reorderTasks: async (tasks: Array<{id: string; position: number; columnId: string}>) => {
-    const response = await api.patch("/boards/tasks/reorder", {tasks});
+    const response = await api.patch("/api/boards/tasks/reorder", {tasks});
     return response.data;
   },
   createSubtask: async (subtaskData: {title: string; taskId: string}) => {
-    const response = await api.post("/boards/subtasks", subtaskData);
+    const response = await api.post("/api/boards/subtasks", subtaskData);
     return response.data;
   },
   toggleSubtask: async (subtaskId: string) => {
-    const response = await api.patch(`/boards/subtasks/${subtaskId}/toggle`);
+    const response = await api.patch(`/api/boards/subtasks/${subtaskId}/toggle`);
     return response.data;
   }
 }
