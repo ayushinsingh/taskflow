@@ -43,7 +43,7 @@ export const initalNormalizedState: GlobalStateStore = {
         title: "Configure Development Environment",
         description:
           "Initialize repository layout structure, ESLint validation baselines, and custom styling overrides.",
-        priority: "high",
+        priority: "HIGH",
         subTaskIds: ["s-501", "s-502"],
       },
       "t-402": {
@@ -51,7 +51,7 @@ export const initalNormalizedState: GlobalStateStore = {
         title: "Design Shell Layout Containers",
         description:
           "Implement structural sidebar navigation items and collapsible canvas grid properties.",
-        priority: "medium",
+        priority: "MEDIUM",
         subTaskIds: [],
       },
     },

@@ -94,11 +94,11 @@ export const TaskInspectorModal: React.FC = () => {
               Priority
             </label>
             <div className="grid grid-cols-4 gap-2">
-              {(["low", "medium", "high", "urgent"] as Priority[]).map((p) => (
+              {(["LOW", "MEDIUM", "HIGH", "URGENT"] as Priority[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => handlePriorityChange(p)}
-                  className={`py-1.5 text-xs font-medium rounded capitalize border transition-all ${
+                  className={`py-1.5 text-xs font-medium rounded uppercase border transition-all ${
                     task.priority === p
                       ? "bg-blue-600/10 border-blue-500 text-blue-400 font-semibold"
                       : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700"

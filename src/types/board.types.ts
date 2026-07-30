@@ -8,7 +8,7 @@ export interface Task {
   id: string
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   subTasks: SubTask[];
 }
 

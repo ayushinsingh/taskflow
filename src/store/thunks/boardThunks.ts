@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { boardService } from "../../services/boardService";
+import { workspaceService } from "../../services/workspaceService";
 import type { RootState } from "../index";
 import type {
   NormalizedWorkspace,
@@ -71,7 +72,7 @@ export const fetchWorkspaces = createAsyncThunk(
   "app/fetchWorkspaces",
   async (_, { rejectWithValue }) => {
     try {
-      const resp = await boardService.getWorkspaces();
+      const resp = await workspaceService.getWorkspaces();
       const rawWorkspaces: RawWorkspace[] = resp.workspaces;
 
       const workspaces: NormalizedWorkspace[] = rawWorkspaces.map((ws) => ({

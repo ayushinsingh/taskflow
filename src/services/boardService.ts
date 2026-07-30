@@ -1,12 +1,7 @@
-import type { WorkspacesResponse } from "../types/api/workspace.types";
 import type { NormalizedTask, Priority } from "../types/normalized.type";
 import api from "./api";
 
 export const boardService = {
-  getWorkspaces: async (): Promise<WorkspacesResponse> => {
-    const response = await api.get("/api/workspaces");
-    return response.data;
-  },
   getBoard: async (boardId: string) => {
     const reponse = await api.get(`/api/boards/${boardId}`);
     return reponse.data;

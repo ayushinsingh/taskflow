@@ -12,3 +12,15 @@ interface WorkspaceType {
 export interface WorkspacesResponse {
   workspaces: WorkspaceType[];
 }
+
+/**
+ * POST /api/workspaces returns the freshly created workspace with its
+ * memberships but *no* `boards` array -- unlike GET /api/workspaces. Hence a
+ * separate type rather than reusing WorkspaceType.
+ */
+export interface CreateWorkspaceResponse {
+  workspace: {
+    id: string;
+    name: string;
+  };
+}

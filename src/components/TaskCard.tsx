@@ -2,6 +2,7 @@ import React from "react";
 import { Trash2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { deleteTask } from "../store/thunks/boardThunks";
+import type { Priority } from "../types/normalized.type";
 
 interface TaskCardProp {
   taskId: string;
@@ -21,11 +22,11 @@ export const TaskCard: React.FC<TaskCardProp> = ({ taskId, columnId }) => {
     0,
   );
 
-  const activeColorMap = {
-    low: "border-emerald-500/40 text-emerald-300 bg-emerald-500/20",
-    medium: "border-amber-500/40 text-amber-300 bg-amber-500/20",
-    high: "border-rose-500/40 text-rose-300 bg-rose-500/20",
-    urgent: "border-red-500/40 text-red-300 bg-red-500/20",
+  const activeColorMap: Record<Priority, string> = {
+    LOW: "border-emerald-500/40 text-emerald-300 bg-emerald-500/20",
+    MEDIUM: "border-amber-500/40 text-amber-300 bg-amber-500/20",
+    HIGH: "border-rose-500/40 text-rose-300 bg-rose-500/20",
+    URGENT: "border-red-500/40 text-red-300 bg-red-500/20",
   };
 
   return (
@@ -52,7 +53,7 @@ export const TaskCard: React.FC<TaskCardProp> = ({ taskId, columnId }) => {
       )}
       <div className="mt-2 flex items-center justify-between text-[11px] text-zinc-500 font-medium font-mono">
         <span
-          className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${activeColorMap[task.priority] || activeColorMap.medium}`}
+          className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${activeColorMap[task.priority]}`}
         >
           {task.priority}
         </span>

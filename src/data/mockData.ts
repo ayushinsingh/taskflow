@@ -17,7 +17,7 @@ export const initialWorkspace: Workspace = {
               title: "Configure Development Environment",
               description:
                 "Initialize repository layout structure, ESLint validation baselines, and custom styling overrides.",
-              priority: "high",
+              priority: "HIGH",
               subTasks: [
                 {
                   id: "s-501",
@@ -36,7 +36,7 @@ export const initialWorkspace: Workspace = {
               title: "Design Shell Layout Containers",
               description:
                 "Implement structural sidebar navigation items and collapsible canvas grid properties.",
-              priority: "medium",
+              priority: "MEDIUM",
               subTasks: [],
             },
           ],

@@ -1,4 +1,5 @@
-export type Priority = 'low' | 'medium' | 'high' | 'urgent';
+// Matches the backend Prisma/Zod enum exactly -- the API is the source of truth.
+export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type LoadStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
 export interface NormalizedWorkspace {
   id: string;
