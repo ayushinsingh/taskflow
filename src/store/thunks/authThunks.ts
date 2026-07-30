@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { authService } from "../../services/authService";
 import axios from "axios";
 import { tokenService } from "../../services/tokenService";
+import type { RootState } from "..";
 
 function getErrorMessage(error: unknown, fallback: string): string {
   if (axios.isAxiosError(error)) {
@@ -43,4 +44,9 @@ export const me = createAsyncThunk("app/me", async (_, { rejectWithValue }) => {
     if (axios.isAxiosError(error) && error.response?.status === 401) tokenService.clearToken();
     return rejectWithValue(message);
   }
-});
+}, {
+  condition: (_arg, { getState }) => {
+    const { status } = (getState() as RootState).auth;
+    return status !== "loading";
+  },
+},);

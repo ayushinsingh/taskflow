@@ -4,7 +4,7 @@ import api from "./api";
 
 export const boardService = {
   getWorkspaces: async (): Promise<WorkspacesResponse> => {
-    const response = await api.get("/workspaces");
+    const response = await api.get("/api/workspaces");
     return response.data;
   },
   getBoard: async (boardId: string) => {
