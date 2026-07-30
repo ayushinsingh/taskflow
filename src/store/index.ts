@@ -4,24 +4,35 @@ import subTaskReducer from "./slices/subTaskSlice";
 import taskReducer from "./slices/taskSlice";
 import columnReducer from "./slices/columnSlice";
 import boardReducer from "./slices/boardSlice";
-import authReducer from "./slices/authSlice";
+import authReducer, { logout } from "./slices/authSlice";
 import workspaceReducer from "./slices/workspaceSlice";
 import { cascadeDeleteMiddleware } from "./middleware/cascadeDeleteMiddleware";
+import { tokenService } from "../services/tokenService";
+
+const PERSISTED_STATE_KEY = "kanban_redux_workspace_store";
 
 const localStorageMiddleware: Middleware = (storeApi) => (next) => (action) => {
   // Pass the action down the chain first so the state gets modified
   const result = next(action);
-  
-  // Grab the fresh state snapshot post-reducer update
-  const {auth, ...rest} = storeApi.getState() as RootState;
-  
-  // Mirror the full state tree out to the client browser storage
-  localStorage.setItem("kanban_redux_workspace_store", JSON.stringify(rest));
-  
+
+  if (logout.match(action)) {
+    localStorage.removeItem(PERSISTED_STATE_KEY);
+    tokenService.clearToken();
+    return result;
+  }
+
+  const { subTasks, tasks, columns, boards, workspaces } =
+    storeApi.getState() as RootState;
+
+  localStorage.setItem(
+    PERSISTED_STATE_KEY,
+    JSON.stringify({ subTasks, tasks, columns, boards, workspaces }),
+  );
+
   return result;
 };
 
-export const rootReducer = combineReducers({
+const combinedReducer = combineReducers({
   subTasks: subTaskReducer,
   tasks: taskReducer,
   columns: columnReducer,
@@ -30,18 +41,21 @@ export const rootReducer = combineReducers({
   auth: authReducer,
 });
 
-export type RootStateType = ReturnType<typeof rootReducer>
+export type RootStateType = ReturnType<typeof combinedReducer>
+
+export const rootReducer: typeof combinedReducer = (state, action) =>
+  combinedReducer(logout.match(action) ? undefined : state, action);
 
 const getPreloadedState = (): RootStateType | undefined => {
   try {
-    const savedCache = localStorage.getItem("kanban_redux_workspace_store");
+    const savedCache = localStorage.getItem(PERSISTED_STATE_KEY);
     if (savedCache) {
       return JSON.parse(savedCache);
     }
   } catch (error) {
     console.error("Failed to hydrate Redux store from localStorage:", error);
   }
-  return undefined; 
+  return undefined;
 };
 
 export const store = configureStore({
