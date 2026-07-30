@@ -7,18 +7,17 @@ import type {
   LoadStatus,
 } from "../../types/normalized.type";
 import type { RootState } from "../index";
-import { initalNormalizedState } from "../../data/normalizedMockData";
-import { createBoard, deleteBoard, fetchWorkspaces } from "../thunks/boardThunks";
+import { createBoard, deleteBoard } from "../thunks/boardThunks";
+import { createWorkspace, fetchWorkspaces } from "../thunks/workspaceThunks";
 
 const workspaceAdapter = createEntityAdapter<NormalizedWorkspace>();
 
-const initialState = workspaceAdapter.setAll(
-  workspaceAdapter.getInitialState({
-    status: "idle" as LoadStatus,
-    error: null as string | null,
-  }),
-  initalNormalizedState.workspaces.entities as Record<string, NormalizedWorkspace>,
-);
+const initialState = workspaceAdapter.getInitialState({
+  status: "idle" as LoadStatus,
+  error: null as string | null,
+  createStatus: "idle" as LoadStatus,
+  createError: null as string | null,
+})
 
 export const workspaceSlice = createSlice({
   name: "workspaces",
@@ -48,6 +47,19 @@ export const workspaceSlice = createSlice({
         if (ws) {
           ws.boardIds = ws.boardIds.filter((id) => id !== boardId);
         }
+      })
+      .addCase(createWorkspace.pending, (state) => {
+        state.createStatus = "loading";
+        state.createError = null;
+      })
+      .addCase(createWorkspace.fulfilled, (state, action) => {
+        workspaceAdapter.addOne(state, action.payload);
+        state.createStatus = "succeeded";
+      })
+      .addCase(createWorkspace.rejected, (state, action) => {
+        state.createStatus = "failed";
+        state.createError =
+          (action.payload as string) ?? "Failed to create workspace";
       })
   },
 });

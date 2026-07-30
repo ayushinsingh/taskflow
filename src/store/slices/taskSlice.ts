@@ -5,17 +5,13 @@ import {
 } from "@reduxjs/toolkit";
 import type { NormalizedTask } from "../../types/normalized.type";
 import type { RootState } from "../index";
-import { initalNormalizedState } from "../../data/normalizedMockData";
 import { createSubtask, createTask, deleteTask, fetchBoardWithId, updateTask } from "../thunks/boardThunks";
 
 const tasksAdapter = createEntityAdapter<NormalizedTask>();
 
-const initialState = tasksAdapter.setAll(
-  tasksAdapter.getInitialState({
-    activeTaskId: null as string | null,
-  }),
-  initalNormalizedState.tasks.entities as Record<string, NormalizedTask>,
-);
+const initialState = tasksAdapter.getInitialState({
+  activeTaskId: null as string | null,
+})
 
 export const taskSlice = createSlice({
   name: "tasks",
@@ -47,14 +43,14 @@ export const taskSlice = createSlice({
       tasksAdapter.addOne(state, action.payload.task);
     }).addCase(updateTask.fulfilled, (state, action) => {
       const task = action.payload;
-      tasksAdapter.updateOne(state, {id: task.id, changes: task});
+      tasksAdapter.updateOne(state, { id: task.id, changes: task });
     }).addCase(deleteTask.fulfilled, (state, action) => {
       const { taskId } = action.payload;
       tasksAdapter.removeOne(state, taskId);
     }).addCase(createSubtask.fulfilled, (state, action) => {
-      const {taskId, subtask} = action.payload;
+      const { taskId, subtask } = action.payload;
       const task = state.entities[taskId];
-      if(task) {
+      if (task) {
         task.subTaskIds.push(subtask.id);
       }
     })

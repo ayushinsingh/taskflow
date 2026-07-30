@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../store";
+import { useAppDispatch } from "../store";
 import { createBoard } from "../store/thunks/boardThunks";
-export const AddBoardInput: React.FC = () => {
-  const workspaceId = useAppSelector((state) => state.workspaces.ids[0]);
+interface AddBoardInputProps {
+  workspaceId: string;
+}
+export const AddBoardInput: React.FC<AddBoardInputProps> = ({workspaceId}) => {
   const dispatch = useAppDispatch();
   const [title, setTitle] = useState("");
   return (

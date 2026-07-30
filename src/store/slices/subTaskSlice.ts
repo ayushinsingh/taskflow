@@ -4,15 +4,11 @@ import {
 } from "@reduxjs/toolkit";
 import type { NormalizedSubTask } from "../../types/normalized.type";
 import type { RootState } from "../index";
-import { initalNormalizedState } from "../../data/normalizedMockData";
 import { createSubtask, fetchBoardWithId, toggleSubtask } from "../thunks/boardThunks";
 
 const subTasksAdapter = createEntityAdapter<NormalizedSubTask>();
 
-const initialState = subTasksAdapter.setAll(
-  subTasksAdapter.getInitialState(),
-  initalNormalizedState.subTasks.entities as Record<string, NormalizedSubTask>,
-);
+const initialState = subTasksAdapter.getInitialState()
 
 export const subTaskSlice = createSlice({
   name: "subTasks",

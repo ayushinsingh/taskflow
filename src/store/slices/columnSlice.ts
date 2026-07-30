@@ -5,14 +5,10 @@ import {
 } from "@reduxjs/toolkit";
 import type { NormalizedColumn } from "../../types/normalized.type";
 import type { RootState } from "../index";
-import { initalNormalizedState } from "../../data/normalizedMockData";
 import { createColumn, createTask, deleteTask, fetchBoardWithId, updateColumn } from "../thunks/boardThunks";
 
 const columnsAdapter = createEntityAdapter<NormalizedColumn>();
-const initialState = columnsAdapter.setAll(
-  columnsAdapter.getInitialState(),
-  initalNormalizedState.columns.entities as Record<string, NormalizedColumn>,
-);
+const initialState = columnsAdapter.getInitialState()
 
 export const columnSlice = createSlice({
   name: "columns",

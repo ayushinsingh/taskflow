@@ -1,9 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { boardService } from "../../services/boardService";
-import { workspaceService } from "../../services/workspaceService";
 import type { RootState } from "../index";
 import type {
-  NormalizedWorkspace,
   NormalizedBoard,
   NormalizedTask,
   NormalizedColumn,
@@ -19,12 +17,6 @@ interface RawSummary {
   id: string;
   title: string;
 }
-interface RawWorkspace {
-  id: string;
-  name: string;
-  boards: RawSummary[];
-}
-
 interface RawSubtask extends RawSummary {
   isCompleted: boolean;
 }
@@ -61,46 +53,6 @@ interface CreateTaskResult extends RawSummary {
   priority: Priority;
   description: string;
 }
-
-export interface FetchWorkspacesResult {
-  workspaces: NormalizedWorkspace[];
-  boards: NormalizedBoard[];
-  activeBoardId: string | null;
-}
-
-export const fetchWorkspaces = createAsyncThunk(
-  "app/fetchWorkspaces",
-  async (_, { rejectWithValue }) => {
-    try {
-      const resp = await workspaceService.getWorkspaces();
-      const rawWorkspaces: RawWorkspace[] = resp.workspaces;
-
-      const workspaces: NormalizedWorkspace[] = rawWorkspaces.map((ws) => ({
-        id: ws.id,
-        name: ws.name,
-        boardIds: ws.boards.map((b) => b.id),
-      }));
-
-      const boards: NormalizedBoard[] = rawWorkspaces.flatMap((ws) =>
-        ws.boards.map((b) => ({ id: b.id, title: b.title, columnIds: [] })),
-      );
-
-      const activeBoardId = boards[0]?.id ?? null;
-
-      return { workspaces, boards, activeBoardId } satisfies FetchWorkspacesResult;
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to fetch workspaces";
-      return rejectWithValue(message);
-    }
-  },
-  {
-    condition: (_arg, { getState }) => {
-      const { status } = (getState() as RootState).workspaces;
-      return status !== "loading";
-    },
-  },
-);
 
 export const fetchBoardWithId = createAsyncThunk(
   "app/fetchBoardWithId",

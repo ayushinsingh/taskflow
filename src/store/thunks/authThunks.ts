@@ -3,15 +3,7 @@ import { authService } from "../../services/authService";
 import axios from "axios";
 import { tokenService } from "../../services/tokenService";
 import type { RootState } from "..";
-
-function getErrorMessage(error: unknown, fallback: string): string {
-  if (axios.isAxiosError(error)) {
-    return error.response?.data?.message ?? error.message ?? fallback;
-  }
-  if (error instanceof Error) return error.message;
-  return fallback;
-}
-
+import { getErrorMessage } from "../../utils/getErrorMessage";
 
 export const login = createAsyncThunk("app/login", async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
   try {

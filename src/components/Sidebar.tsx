@@ -5,22 +5,23 @@ import { useAppDispatch, useAppSelector } from "../store";
 import { changeBoard } from "../store/slices/boardSlice";
 import {  } from "../store/slices/workspaceSlice";
 import { deleteBoard } from "../store/thunks/boardThunks";
+interface SidebarProps {
+  workspaceId: string;
+}
 
-export const Sidebar: React.FC = React.memo(() => {
+export const Sidebar: React.FC<SidebarProps> = React.memo(({workspaceId}) => {
   const dispatch = useAppDispatch();
-  const activeWorkspaceId = useAppSelector(
-    (state) => state.workspaces.ids[0],
-  ) as string | undefined;
+  
   const activeBoardId = useAppSelector((state) => state.boards.activeBoardId);
 
   const activeWorkspace = useAppSelector((state) =>
-    activeWorkspaceId
-      ? state.workspaces.entities[activeWorkspaceId]
+    workspaceId
+      ? state.workspaces.entities[workspaceId]
       : undefined,
   );
   const boards = useAppSelector((state) => state.boards);
 
-  if (!activeWorkspace || !activeWorkspaceId) {
+  if (!activeWorkspace || !workspaceId) {
     return <div className="text-zinc-600 text-xs p-3">No workspaces found</div>;
   }
 
@@ -48,7 +49,7 @@ export const Sidebar: React.FC = React.memo(() => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch(deleteBoard({boardId, workspaceId: activeWorkspaceId}))
+                dispatch(deleteBoard({boardId, workspaceId}))
               }}
               className="opacity-0 group-hover:opacity-100 p-2 text-zinc-500 hover:text-red-400 transition-all shrink-0"
               aria-label="Delete Board"
@@ -58,7 +59,7 @@ export const Sidebar: React.FC = React.memo(() => {
           </div>
         );
       })}
-      <AddBoardInput />
+      <AddBoardInput workspaceId={workspaceId} />
     </nav>
   );
 });

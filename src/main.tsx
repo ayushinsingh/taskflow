@@ -8,6 +8,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage.tsx";
 import { SignupPage } from "./pages/SignupPage.tsx";
 import { ProtectedRoute } from "./pages/ProtectedRoute.tsx";
+import { LandingPage } from "./pages/LandingPage.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -17,7 +18,8 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/login" element={<LoginPage />}></Route>
           <Route path="/signup" element={<SignupPage />}></Route>
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<App />}></Route>
+            <Route path="/" element={<LandingPage />}></Route>
+            <Route path="/workspaces/:workspaceId" element={<App />}></Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

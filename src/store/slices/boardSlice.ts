@@ -5,19 +5,17 @@ import {
 } from "@reduxjs/toolkit";
 import type { NormalizedBoard, LoadStatus } from "../../types/normalized.type";
 import type { RootState } from "../index";
-import { initalNormalizedState } from "../../data/normalizedMockData";
-import { createBoard, createColumn, deleteBoard, deleteColumn, fetchBoardWithId, fetchWorkspaces } from "../thunks/boardThunks";
+import { createBoard, createColumn, deleteBoard, deleteColumn, fetchBoardWithId } from "../thunks/boardThunks";
+import { fetchWorkspaces } from "../thunks/workspaceThunks";
 
 const boardsAdapter = createEntityAdapter<NormalizedBoard>();
 
-const initialState = boardsAdapter.setAll(
+const initialState =
   boardsAdapter.getInitialState({
-    activeBoardId: initalNormalizedState.activeBoardId,
+    activeBoardId: null as string | null,
     status: "idle" as LoadStatus,
     error: null as string | null,
-  }),
-  initalNormalizedState.boards.entities as Record<string, NormalizedBoard>,
-);
+  })
 
 export const boardSlice = createSlice({
   name: "boards",
@@ -32,7 +30,7 @@ export const boardSlice = createSlice({
       boardsAdapter.updateOne(state, { id: boardId, changes: { title } });
     },
     deleteBoards: boardsAdapter.removeMany,
-    changeBoard: (state, action: PayloadAction<string>) => {
+    changeBoard: (state, action: PayloadAction<string | null>) => {
       state.activeBoardId = action.payload;
     },
     moveColumnLane: (
@@ -59,7 +57,6 @@ export const boardSlice = createSlice({
           columnIds: state.entities[board.id]?.columnIds ?? board.columnIds,
         }));
         boardsAdapter.upsertMany(state, boards);
-        state.activeBoardId = action.payload.activeBoardId;
       })
       .addCase(fetchBoardWithId.pending, (state) => {
         state.status = "loading";
@@ -83,7 +80,7 @@ export const boardSlice = createSlice({
           board.columnIds.push(column.id);
         }
       }).addCase(deleteColumn.fulfilled, (state, action) => {
-        const {boardId, columnId} = action.payload;
+        const { boardId, columnId } = action.payload;
         const board = state.entities[boardId];
         if (board) {
           board.columnIds = board.columnIds.filter((id) => id !== columnId);
