@@ -12,7 +12,7 @@ export interface Invitation {
   status: InvitationStatus;
   createdAt: string;
   workspaceId: string;
-  invitedBy: { name: string };
+  invitedBy: { name: string, email: string };
   workspace: { id: string; name: string };
 }
 

@@ -8,6 +8,7 @@ import authReducer, { logout } from "./slices/authSlice";
 import workspaceReducer from "./slices/workspaceSlice";
 import { cascadeDeleteMiddleware } from "./middleware/cascadeDeleteMiddleware";
 import { tokenService } from "../services/tokenService";
+import invitationReducer from "./slices/invitationSlice";
 
 const PERSISTED_STATE_KEY = "kanban_redux_workspace_store";
 
@@ -39,6 +40,7 @@ const combinedReducer = combineReducers({
   boards: boardReducer,
   workspaces: workspaceReducer,
   auth: authReducer,
+  invitations: invitationReducer
 });
 
 export type RootStateType = ReturnType<typeof combinedReducer>
