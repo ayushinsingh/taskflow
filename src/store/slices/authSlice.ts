@@ -2,18 +2,18 @@ import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import type { AuthUser } from "../../types/api/auth.types";
 import type { LoadStatus } from "../../types/normalized.type";
 import { login, signup, me } from "../thunks/authThunks";
-import { tokenService } from "../../services/tokenService";
 
 interface AuthState {
   user: AuthUser | null;
-  token: string | null;
   status: LoadStatus;
   error: string | null;
 }
 
+// No token field: it lives in an httpOnly cookie the client cannot read, so
+// `user` plus `status` carry the whole auth state. `status: "idle"` now means
+// "we have not asked the server yet", never "logged out".
 const initialState: AuthState = {
   user: null,
-  token: tokenService.getToken(),
   status: "idle",
   error: null
 }
@@ -27,7 +27,6 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.user = null;
-      state.token = null;
       state.status = "idle";
       state.error = null;
     }
@@ -39,7 +38,6 @@ const authSlice = createSlice({
       state.status = "succeeded";
     }).addCase(me.rejected, (state,) => {
       state.user = null;
-      state.token = null;
       state.status = "failed";
     }).addMatcher(isAnyOf(login.pending, signup.pending, me.pending), (state) => {
       state.status = "loading";
@@ -48,12 +46,10 @@ const authSlice = createSlice({
       state.error = null;
       state.status = "succeeded";
       state.user = action.payload.user;
-      state.token = action.payload.accessToken;
     }).addMatcher(isAnyOf(login.rejected, signup.rejected), (state, action) => {
       state.error = action.payload as string;
       state.status = "failed";
       state.user = null;
-      state.token = null;
     })
   }
 });

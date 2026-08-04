@@ -2,6 +2,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store";
 import { useEffect } from "react";
 import { me } from "../store/thunks/authThunks";
+import { Spinner } from "../components/Spinner";
 
 export const ProtectedRoute = () => {
   const auth = useAppSelector((state) => state.auth);
@@ -13,12 +14,9 @@ export const ProtectedRoute = () => {
     }
   }, [dispatch, auth.user]);
 
-  if (!auth.token || auth.status === "failed")
-    return <Navigate to="/login" replace />;
+  // With an httpOnly cookie there is nothing readable to check synchronously,
+  // so the server is the only authority: ask, then decide.
   if (auth.user) return <Outlet />;
-  return (
-    <div className="flex justify-center items-center h-screen bg-zinc-900">
-      <div className="w-12 h-12 border-2 border-zinc-800 border-t-blue-500 rounded-full animate-spin"></div>
-    </div>
-  );
+  if (auth.status === "failed") return <Navigate to="/login" replace />;
+  return <Spinner />;
 };

@@ -7,7 +7,6 @@ import boardReducer from "./slices/boardSlice";
 import authReducer, { logout } from "./slices/authSlice";
 import workspaceReducer from "./slices/workspaceSlice";
 import { cascadeDeleteMiddleware } from "./middleware/cascadeDeleteMiddleware";
-import { tokenService } from "../services/tokenService";
 import invitationReducer from "./slices/invitationSlice";
 import memberReducer from "./slices/memberSlice";
 
@@ -17,9 +16,10 @@ const localStorageMiddleware: Middleware = (storeApi) => (next) => (action) => {
   // Pass the action down the chain first so the state gets modified
   const result = next(action);
 
+  // The cookie is cleared server-side by POST /auth/logout; all that is left to
+  // purge here is the mirrored board data.
   if (logout.match(action)) {
     localStorage.removeItem(PERSISTED_STATE_KEY);
-    tokenService.clearToken();
     return result;
   }
 

@@ -1,21 +1,14 @@
 import axios from "axios";
-import { tokenService } from "./tokenService";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:5000",
   headers: {
-    "Content-Type": "application/json"
-  }
-})
-
-api.interceptors.request.use(
-  function(config) {
-    const token = tokenService.getToken();
-    if(token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config;
-  }
-)
+    "Content-Type": "application/json",
+  },
+  // Required for the httpOnly auth cookie to be sent cross-origin. The server
+  // must answer with credentials:true and an explicit origin -- a wildcard
+  // Access-Control-Allow-Origin is rejected by the browser when this is set.
+  withCredentials: true,
+});
 
 export default api;
