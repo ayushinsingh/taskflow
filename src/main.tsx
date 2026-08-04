@@ -9,6 +9,8 @@ import { LoginPage } from "./pages/LoginPage.tsx";
 import { SignupPage } from "./pages/SignupPage.tsx";
 import { ProtectedRoute } from "./pages/ProtectedRoute.tsx";
 import { LandingPage } from "./pages/LandingPage.tsx";
+import { InvitationPage } from "./pages/InvitationPage.tsx";
+import { MembersPage } from "./pages/MembersPage.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -19,7 +21,12 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/signup" element={<SignupPage />}></Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<LandingPage />}></Route>
+            <Route path="/invitations" element={<InvitationPage />}></Route>
             <Route path="/workspaces/:workspaceId" element={<App />}></Route>
+            <Route
+              path="/workspaces/:workspaceId/members"
+              element={<MembersPage />}
+            ></Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

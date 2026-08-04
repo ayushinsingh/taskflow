@@ -1,3 +1,5 @@
+import type { Role } from "./api/invitation.types";
+
 // Matches the backend Prisma/Zod enum exactly -- the API is the source of truth.
 export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type LoadStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -5,6 +7,8 @@ export interface NormalizedWorkspace {
   id: string;
   name: string;
   boardIds: string[];
+  /** The signed-in user's own role in this workspace. Drives admin-only UI. */
+  role: Role;
 }
 export interface NormalizedBoard {
   id: string;

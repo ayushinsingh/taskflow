@@ -6,6 +6,7 @@ import type {
   NormalizedBoard,
 } from "../../types/normalized.type";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import type { Role } from "../../types/api/invitation.types";
 
 /** The nested shape GET /api/workspaces returns. */
 interface RawBoardSummary {
@@ -16,6 +17,7 @@ interface RawWorkspace {
   id: string;
   name: string;
   boards: RawBoardSummary[];
+  memberships: { role: Role }[];
 }
 
 export interface FetchWorkspacesResult {
@@ -34,6 +36,7 @@ export const fetchWorkspaces = createAsyncThunk(
         id: ws.id,
         name: ws.name,
         boardIds: ws.boards.map((b) => b.id),
+        role: ws.memberships[0]?.role ?? "MEMBER",
       }));
 
       const boards: NormalizedBoard[] = rawWorkspaces.flatMap((ws) =>
@@ -66,6 +69,7 @@ export const createWorkspace = createAsyncThunk(
         id: resp.workspace.id,
         name: resp.workspace.name,
         boardIds: [],
+        role: "OWNER",
       };
       return workspace;
     } catch (error) {

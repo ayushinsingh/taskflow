@@ -7,6 +7,7 @@ import {
   fetchWorkspaces,
 } from "../store/thunks/workspaceThunks";
 import { workspaceSelectors } from "../store/slices/workspaceSlice";
+import { fetchInvitations } from "../store/thunks/invitationThunks";
 import { Spinner } from "../components/Spinner";
 import { DashboardLayout } from "../components/Layouts/DashboardLayout";
 import { TextField } from "../components/TextField";
@@ -19,12 +20,16 @@ export const LandingPage = () => {
   const { status, error, createStatus, createError } = useAppSelector(
     (state) => state.workspaces,
   );
+  const pendingInvitations = useAppSelector(
+    (state) => state.invitations.invitations.length,
+  );
 
   const [name, setName] = useState("");
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     dispatch(fetchWorkspaces());
+    dispatch(fetchInvitations());
   }, [dispatch]);
 
   const nameError = getFieldErrors.workspaceName(name);
@@ -77,6 +82,11 @@ export const LandingPage = () => {
     >
       <Mail className="h-4 w-4 shrink-0" />
       View invitations
+      {pendingInvitations > 0 && (
+        <span className="rounded-full bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white no-underline">
+          {pendingInvitations}
+        </span>
+      )}
     </Link>
   );
 

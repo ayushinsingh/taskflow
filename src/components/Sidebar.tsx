@@ -1,9 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { AddBoardInput } from "./AddBoardInput";
-import { Trash2 } from "lucide-react";
+import { LayoutGrid, Trash2, Users } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { changeBoard } from "../store/slices/boardSlice";
-import {  } from "../store/slices/workspaceSlice";
 import { deleteBoard } from "../store/thunks/boardThunks";
 interface SidebarProps {
   workspaceId: string;
@@ -24,6 +24,11 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(({workspaceId}) => {
   if (!activeWorkspace || !workspaceId) {
     return <div className="text-zinc-600 text-xs p-3">No workspaces found</div>;
   }
+
+  // Hiding the link is a courtesy, not a control -- the backend rejects
+  // non-admins on every members/invitation route regardless.
+  const isAdmin =
+    activeWorkspace.role === "OWNER" || activeWorkspace.role === "ADMIN";
 
   return (
     <nav className="space-y-1">
@@ -60,6 +65,25 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(({workspaceId}) => {
         );
       })}
       <AddBoardInput workspaceId={workspaceId} />
+
+      <div className="border-t border-zinc-900 pt-2">
+        <Link
+          to="/"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-900/50 hover:text-zinc-200"
+        >
+          <LayoutGrid className="h-4 w-4 shrink-0" />
+          All workspaces
+        </Link>
+        {isAdmin && (
+          <Link
+            to={`/workspaces/${workspaceId}/members`}
+            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-900/50 hover:text-zinc-200"
+          >
+            <Users className="h-4 w-4 shrink-0" />
+            Members
+          </Link>
+        )}
+      </div>
     </nav>
   );
 });
