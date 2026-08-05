@@ -9,6 +9,7 @@ import { moveTaskCard } from "./store/slices/columnSlice";
 import { fetchBoardWithId } from "./store/thunks/boardThunks";
 import { fetchWorkspaces } from "./store/thunks/workspaceThunks";
 import { Navigate, useParams } from "react-router-dom";
+import { AppShellLayout } from "./components/Layouts/AppShellLayout";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -71,8 +72,8 @@ export default function App() {
     return <Navigate to="/" replace />;
 
   return (
-    <div className="flex h-screen w-screen font-sans bg-zinc-900 text-zinc-100">
-      <aside className="flex w-64 flex-col border-r border-zinc-800 bg-zinc-950 p-4">
+    <AppShellLayout>
+      <aside className="flex w-64 shrink-0 flex-col overflow-y-auto border-r border-zinc-800 bg-zinc-950 p-4">
         <h2 className="text-xl font-bold tracking-tight text-zinc-50 mb-6 text-center">
           {workspace?.name}
         </h2>
@@ -82,6 +83,6 @@ export default function App() {
         <BoardCanvas />
       </DragDropContext>
       {activeTaskId && <TaskInspectorModal />}
-    </div>
+    </AppShellLayout>
   );
 }
