@@ -4,9 +4,12 @@ import { Sidebar } from "./components/Sidebar";
 import { BoardCanvas } from "./components/BoardCanvas";
 import { TaskInspectorModal } from "./components/TaskInspectorModal";
 import { useAppDispatch, useAppSelector } from "./store";
-import { changeBoard, moveColumnLane } from "./store/slices/boardSlice";
-import { moveTaskCard } from "./store/slices/columnSlice";
-import { fetchBoardWithId } from "./store/thunks/boardThunks";
+import { changeBoard } from "./store/slices/boardSlice";
+import {
+  fetchBoardWithId,
+  reorderColumns,
+  reorderTasks,
+} from "./store/thunks/boardThunks";
 import { fetchWorkspaces } from "./store/thunks/workspaceThunks";
 import { Navigate, useParams } from "react-router-dom";
 import { AppShellLayout } from "./components/Layouts/AppShellLayout";
@@ -48,9 +51,10 @@ export default function App() {
     ) {
       return;
     }
+    // These thunks apply the optimistic move themselves, then persist it.
     if (type === "COLUMN") {
       dispatch(
-        moveColumnLane({
+        reorderColumns({
           boardId: activeBoardId,
           sourceIndex: source.index,
           destinationIndex: destination!.index,
@@ -58,7 +62,8 @@ export default function App() {
       );
     } else {
       dispatch(
-        moveTaskCard({
+        reorderTasks({
+          boardId: activeBoardId,
           sourceColumnId: source.droppableId,
           sourceIndex: source.index,
           destinationColumnId: destination!.droppableId,

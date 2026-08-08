@@ -1,5 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { boardService } from "../../services/boardService";
+import { getErrorMessage } from "../../utils/getErrorMessage";
+import { moveColumnLane } from "../slices/boardSlice";
+import { moveTaskCard } from "../slices/columnSlice";
 import type { RootState } from "../index";
 import type {
   NormalizedBoard,
@@ -210,3 +213,75 @@ export const toggleSubtask = createAsyncThunk("app/toggleSubtask", async (subtas
     return rejectWithValue(message);
   }
 })
+
+/**
+ * Persisting a drag is a two-step affair: apply the optimistic reducer, then
+ * read the *resulting* arrays to derive positions.
+ *
+ * The normalized state has no `position` field -- order is implied by index in
+ * `columnIds` / `taskIds` -- so positions can only be computed after the move
+ * has been applied, not from the DropResult alone.
+ *
+ * On failure we refetch the board rather than trying to invert the move: the
+ * server's copy is the truth, and an inverse-move is easy to get subtly wrong.
+ */
+export const reorderColumns = createAsyncThunk(
+  "app/reorderColumns",
+  async (
+    args: { boardId: string; sourceIndex: number; destinationIndex: number },
+    { dispatch, getState, rejectWithValue },
+  ) => {
+    dispatch(moveColumnLane(args));
+    const board = (getState() as RootState).boards.entities[args.boardId];
+    if (!board) return rejectWithValue("Board not found");
+
+    const columns = board.columnIds.map((id, position) => ({ id, position }));
+    try {
+      await boardService.reorderColumns(columns);
+      return columns;
+    } catch (error) {
+      dispatch(fetchBoardWithId(args.boardId));
+      return rejectWithValue(getErrorMessage(error, "Failed to reorder columns"));
+    }
+  },
+);
+
+export const reorderTasks = createAsyncThunk(
+  "app/reorderTasks",
+  async (
+    args: {
+      boardId: string;
+      sourceColumnId: string;
+      destinationColumnId: string;
+      sourceIndex: number;
+      destinationIndex: number;
+    },
+    { dispatch, getState, rejectWithValue },
+  ) => {
+    dispatch(moveTaskCard(args));
+    const columnEntities = (getState() as RootState).columns.entities;
+
+    // Both columns are sent: moving a card renumbers the source as well as the
+    // destination, so sending only the moved task would leave its old siblings
+    // holding stale positions. A Set keeps a same-column move from sending
+    // every task twice.
+    const affectedColumnIds = new Set([
+      args.sourceColumnId,
+      args.destinationColumnId,
+    ]);
+
+    const tasks = [...affectedColumnIds].flatMap((columnId) => {
+      const column = columnEntities[columnId];
+      if (!column) return [];
+      return column.taskIds.map((id, position) => ({ id, position, columnId }));
+    });
+
+    try {
+      await boardService.reorderTasks(tasks);
+      return tasks;
+    } catch (error) {
+      dispatch(fetchBoardWithId(args.boardId));
+      return rejectWithValue(getErrorMessage(error, "Failed to reorder tasks"));
+    }
+  },
+);
