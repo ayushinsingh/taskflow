@@ -21,5 +21,9 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  /* Tests are excluded from the production typecheck so a work-in-progress
+     test can never block `npm run build`. They are still typechecked by the
+     editor and by `npm run typecheck:test`, and still run under vitest. */
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test"]
 }

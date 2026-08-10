@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {

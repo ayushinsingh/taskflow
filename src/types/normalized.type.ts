@@ -40,7 +40,7 @@ export interface NormalizedTask {
   assignedTo: TaskUser | null;
 }
 
-export interface NormalizedSubTask {
+export interface NormalizedSubtask {
   id: string;
   title: string;
   isCompleted: boolean;
@@ -56,7 +56,7 @@ export interface GlobalStateStore {
   boards: EntityState<NormalizedBoard>;
   columns: EntityState<NormalizedColumn>;
   tasks: EntityState<NormalizedTask>;
-  subTasks: EntityState<NormalizedSubTask>;
+  subTasks: EntityState<NormalizedSubtask>;
   activeBoardId: string | null;
   activeTaskId: string | null;
 }

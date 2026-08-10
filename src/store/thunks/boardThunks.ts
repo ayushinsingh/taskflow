@@ -9,7 +9,7 @@ import type {
   NormalizedTask,
   NormalizedColumn,
   Priority,
-  NormalizedSubTask,
+  NormalizedSubtask,
   TaskUser,
 } from "../../types/normalized.type";
 
@@ -71,7 +71,7 @@ export const fetchBoardWithId = createAsyncThunk(
       const board: RawBoard = await boardService.getBoard(id);
       const columns: NormalizedColumn[] = board.columns.map((column) => ({ id: column.id, title: column.title, taskIds: column.tasks.map(task => task.id) }));
       const tasks: NormalizedTask[] = board.columns.flatMap((column) => column.tasks.map(task => ({ id: task.id, title: task.title, priority: task.priority, description: task.description, subTaskIds: task.subtasks.map((subtask) => subtask.id), createdBy: task.createdBy, assignedToId: task.assignedToId, assignedTo: task.assignedTo })));
-      const subtasks: NormalizedSubTask[] = board.columns.flatMap((column) => column.tasks.flatMap(task => task.subtasks.map((subtask) => ({id: subtask.id, title: subtask.title, isCompleted: subtask.isCompleted}))));
+      const subtasks: NormalizedSubtask[] = board.columns.flatMap((column) => column.tasks.flatMap(task => task.subtasks.map((subtask) => ({id: subtask.id, title: subtask.title, isCompleted: subtask.isCompleted}))));
 
       return {
         board: {id: board.id, title: board.title, columnIds: board.columns.map((c) => c.id)},
@@ -205,7 +205,7 @@ export const deleteTask = createAsyncThunk("app/deleteTask", async (taskData:{ t
 export const createSubtask = createAsyncThunk("app/createSubtask", async (subtaskData: {title: string; taskId: string}, { rejectWithValue }) => {
   try {
     const resp: CreateSubtaskResult = await boardService.createSubtask(subtaskData);
-    const subtask: NormalizedSubTask = {
+    const subtask: NormalizedSubtask = {
       id: resp.id,
       title: resp.title,
       isCompleted: resp.isCompleted
