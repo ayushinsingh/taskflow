@@ -5,7 +5,10 @@ import { AddSubTaskInput } from "./AddSubTaskInput";
 import { useAppDispatch, useAppSelector } from "../store";
 import { closeTaskInspector } from "../store/slices/taskSlice";
 import { X } from "lucide-react";
+import { useParams } from "react-router-dom";
 import { toggleSubtask, updateTask } from "../store/thunks/boardThunks";
+import { fetchWorkspaceMembers } from "../store/thunks/memberThunks";
+import { Avatar } from "./Avatar";
 
 export const TaskInspectorModal: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -14,21 +17,47 @@ export const TaskInspectorModal: React.FC = () => {
     activeTaskId ? state.tasks.entities[activeTaskId] : undefined,
   );
   const subTasks = useAppSelector((state) => state.subTasks);
+  const { workspaceId } = useParams();
+  const members = useAppSelector((state) => state.members.members);
+  const membersLoadedFor = useAppSelector((state) => state.members.workspaceId);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isEditingAssignee, setIsEditingAssignee] = useState(false);
 
   useEffect(() => {
     if (task) {
       setTitle(task.title);
       setDescription(task.description);
+      // Otherwise opening a different task inherits the previous one's
+      // half-finished edit state.
+      setIsEditingAssignee(false);
     }
   }, [activeTaskId, task?.id]); // Safe optional chain boundary pointer
+
+  // MembersPage may never have been visited, so the picker fetches its own
+  // options. Non-admins get a 403 and an empty list -- see the fallback option
+  // in the select below.
+  useEffect(() => {
+    if (workspaceId && membersLoadedFor !== workspaceId) {
+      dispatch(fetchWorkspaceMembers(workspaceId));
+    }
+  }, [dispatch, workspaceId, membersLoadedFor]);
 
   if (!activeTaskId || !task) return null;
 
   const handlePriorityChange = (priority: Priority) => {
     dispatch(updateTask({ taskId: activeTaskId, changes: { priority } }));
+  };
+
+  const handleAssigneeChange = (userId: string) => {
+    // "" is the Unassigned option; the API expects an explicit null to clear.
+    dispatch(
+      updateTask({
+        taskId: activeTaskId,
+        changes: { assignedToId: userId === "" ? null : userId },
+      }),
+    );
   };
 
   const handleBlur = (key: "title" | "description", value: string) => {
@@ -73,6 +102,85 @@ export const TaskInspectorModal: React.FC = () => {
             onBlur={() => handleBlur("title", title)}
             className="w-full bg-transparent text-xl font-bold text-zinc-100 border-b border-transparent focus:border-blue-500/50 outline-none pb-1"
           />
+
+          {/* People -- kept adjacent to the title so ownership reads before the
+              editable body fields. */}
+          <div className="space-y-4 border-y border-zinc-800/80 py-4">
+            <div className="min-w-0 space-y-2">
+              <label
+                htmlFor="task-assignee"
+                className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider"
+              >
+                Assigned to
+              </label>
+              {isEditingAssignee ? (
+                <select
+                  id="task-assignee"
+                  autoFocus
+                  value={task.assignedToId ?? ""}
+                  onChange={(e) => {
+                    handleAssigneeChange(e.target.value);
+                    setIsEditingAssignee(false);
+                  }}
+                  onBlur={() => setIsEditingAssignee(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") setIsEditingAssignee(false);
+                  }}
+                  className="w-full min-w-0 bg-zinc-900 border border-zinc-800 rounded-md px-3 py-2 text-sm text-zinc-300 focus:border-blue-500/50 focus:outline-none"
+                >
+                  <option value="">Unassigned</option>
+                  {/* The current assignee may not be in `members` -- that list
+                      is admin-only, so it is empty for regular users. Rendering
+                      them explicitly keeps the select from silently showing
+                      Unassigned for a task that is in fact assigned. */}
+                  {task.assignedTo &&
+                    !members.some((m) => m.userId === task.assignedToId) && (
+                      <option value={task.assignedToId ?? ""}>
+                        {task.assignedTo.name}
+                      </option>
+                    )}
+                  {members.map((member) => (
+                    <option key={member.userId} value={member.userId}>
+                      {member.user.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingAssignee(true)}
+                  title="Click to change the assignee"
+                  className="flex w-full min-w-0 cursor-pointer items-center gap-2 rounded-md border border-transparent px-3 py-2 text-left text-sm hover:border-zinc-800 hover:bg-zinc-900/60 focus:border-blue-500/50 focus:outline-none"
+                >
+                  {task.assignedTo ? (
+                    <>
+                      <Avatar user={task.assignedTo} />
+                      <span className="truncate text-zinc-300">
+                        {task.assignedTo.name}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-zinc-500">Unassigned</span>
+                  )}
+                </button>
+              )}
+            </div>
+
+            <div className="min-w-0 space-y-2">
+              <span className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                Created by
+              </span>
+              {/* Same padding and transparent border as the assignee row above,
+                  so both avatars share a left edge and both rows the same
+                  height. The email lives in the Avatar's tooltip. */}
+              <div className="flex min-w-0 items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm">
+                <Avatar user={task.createdBy} />
+                <span className="truncate text-zinc-300">
+                  {task.createdBy.name}
+                </span>
+              </div>
+            </div>
+          </div>
 
           <div className="space-y-2">
             <label htmlFor="description" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">

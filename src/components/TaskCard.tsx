@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { deleteTask } from "../store/thunks/boardThunks";
 import type { Priority } from "../types/normalized.type";
+import { Avatar } from "./Avatar";
 
 interface TaskCardProp {
   taskId: string;
@@ -31,10 +32,13 @@ export const TaskCard: React.FC<TaskCardProp> = ({ taskId, columnId }) => {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-1">
-        <h4 className="font-medium text-zinc-200 truncate pr-2">
-          {task.title}
-        </h4>
+      <div className="flex items-center justify-between mb-1 gap-2">
+        {/* min-w-0 lets the title's `truncate` work: a flex child defaults to
+            min-width:auto and would otherwise refuse to shrink below its text. */}
+        <div className="flex min-w-0 items-center gap-2">
+          {task.assignedTo && <Avatar user={task.assignedTo} />}
+          <h4 className="font-medium text-zinc-200 truncate">{task.title}</h4>
+        </div>
         <button
           className="opacity-0 group-hover/task:opacity-100 p-1 rounded hover:bg-zinc-800 text-zinc-500 hover:text-red-400 transition-all shrink-0"
           aria-label="Delete Task"

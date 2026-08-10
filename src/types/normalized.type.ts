@@ -21,12 +21,23 @@ export interface NormalizedColumn {
   taskIds: string[];
 }
 
+/** Denormalized on purpose: the API sends the joined name/email with every
+ * task, and there is no users slice to normalize them into. */
+export interface TaskUser {
+  name: string;
+  email: string;
+}
+
 export interface NormalizedTask {
   id: string;
   title: string;
   description: string;
   priority: Priority;
   subTaskIds: string[];
+  /** createdById is non-nullable in the schema, so this is always present. */
+  createdBy: TaskUser;
+  assignedToId: string | null;
+  assignedTo: TaskUser | null;
 }
 
 export interface NormalizedSubTask {

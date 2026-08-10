@@ -10,6 +10,7 @@ import type {
   NormalizedColumn,
   Priority,
   NormalizedSubTask,
+  TaskUser,
 } from "../../types/normalized.type";
 
 /**
@@ -28,6 +29,9 @@ interface RawTask extends RawSummary {
   priority: Priority;
   description: string;
   subtasks: RawSubtask[];
+  createdBy: TaskUser;
+  assignedToId: string | null;
+  assignedTo: TaskUser | null;
 }
 
 interface RawColumns extends RawSummary {
@@ -55,6 +59,9 @@ interface CreateTaskResult extends RawSummary {
   columnId: string;
   priority: Priority;
   description: string;
+  createdBy: TaskUser;
+  assignedToId: string | null;
+  assignedTo: TaskUser | null;
 }
 
 export const fetchBoardWithId = createAsyncThunk(
@@ -63,7 +70,7 @@ export const fetchBoardWithId = createAsyncThunk(
     try {
       const board: RawBoard = await boardService.getBoard(id);
       const columns: NormalizedColumn[] = board.columns.map((column) => ({ id: column.id, title: column.title, taskIds: column.tasks.map(task => task.id) }));
-      const tasks: NormalizedTask[] = board.columns.flatMap((column) => column.tasks.map(task => ({ id: task.id, title: task.title, priority: task.priority, description: task.description, subTaskIds: task.subtasks.map((subtask) => subtask.id) })));
+      const tasks: NormalizedTask[] = board.columns.flatMap((column) => column.tasks.map(task => ({ id: task.id, title: task.title, priority: task.priority, description: task.description, subTaskIds: task.subtasks.map((subtask) => subtask.id), createdBy: task.createdBy, assignedToId: task.assignedToId, assignedTo: task.assignedTo })));
       const subtasks: NormalizedSubTask[] = board.columns.flatMap((column) => column.tasks.flatMap(task => task.subtasks.map((subtask) => ({id: subtask.id, title: subtask.title, isCompleted: subtask.isCompleted}))));
 
       return {
@@ -154,7 +161,10 @@ export const createTask = createAsyncThunk("app/createTask", async (taskData: {t
       title: newTask.title,
       priority: newTask.priority,
       description: newTask.description,
-      subTaskIds: []
+      subTaskIds: [],
+      createdBy: newTask.createdBy,
+      assignedToId: newTask.assignedToId,
+      assignedTo: newTask.assignedTo,
     }
     return {columnId: newTask.columnId, task: normalizedTask};
   } catch (error) {
@@ -171,6 +181,9 @@ export const updateTask = createAsyncThunk("app/updateTask", async (taskData: {t
       title: updatedTask.title,
       priority: updatedTask.priority,
       description: updatedTask.description,
+      createdBy: updatedTask.createdBy,
+      assignedToId: updatedTask.assignedToId,
+      assignedTo: updatedTask.assignedTo,
     }
     return normalizedTask;
   } catch (error) {
