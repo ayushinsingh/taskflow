@@ -34,9 +34,8 @@ export const columnSlice = createSlice({
       const sourceColumn = state.entities[sourceColumnId];
 
       const destinationColumn = state.entities[destinationColumnId];
-      const taskId = sourceColumn.taskIds[sourceIndex];
-
       if (!sourceColumn || !destinationColumn) return;
+      const taskId = sourceColumn.taskIds[sourceIndex];
 
       if (sourceColumnId === destinationColumnId) {
         const updatedTaskIds = [...sourceColumn.taskIds];
